@@ -34,6 +34,7 @@ clean_csv <- function(file) {
       chl_rfu = 14,
       chl_ugl = 15,
       vpos_m = 16
-    )
+    ) |>
+    relocate(vpos_m, .after = user)
   
 }
