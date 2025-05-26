@@ -1,0 +1,19 @@
+Pretty_Col_Names,Pretty_Col_Names_DCR,Parameter,Param_name_DCR,Units
+Time Stamp,DateTimeET,FALSE,Time Stamp,NA
+Record,Record,FALSE,Record,NA
+PFL Counter,PFL Counter,FALSE,PFL Counter,NA
+CntR S232,CntR S232,FALSE,CntR S232,NA
+Depth,Depth_m,FALSE,Depth_m,NA
+Temp (C),Water Temperature,TRUE,Water Temperature,Deg-C
+SpCond (uS/cm),Specific Conductance,TRUE,Specific Conductance,uS/cm
+Vertical Position (meters),Vpos_m,FALSE,Depth_m,m
+Depths,Depths,FALSE,Depths,NA
+pH,pH,TRUE,pH,pH
+ORP (mV),ORP (mV),TRUE,ORP,mV
+Turbidity (NTU),Turbidity (NTU),TRUE,Turbidity,NTU
+Chlorophyll (ug/L),Chlorophyll,TRUE,Chlorophyll,ug/L
+BGA-PC (ug/L),Blue Green Algae,TRUE,Blue Green Algae,ug/L
+ODO (%sat),Oxygen Saturation,TRUE,Oxygen Saturation,%
+ODO (mg/L),ODO (mg/L),TRUE,Dissolved Oxygen,mg/L
+Battery (volts),Battery (volts),FALSE,Battery,volts
+CablePower (volts),CablePower (volts),FALSE,CablePower,volts
