@@ -3,7 +3,10 @@
 
 # Package installation----
 pkg <- c(
-  "tidyverse"
+  "tidyverse",
+  "zoo",
+  "DBI",
+  "duckdb"
 )
 
 installed_packages <- pkg %in% rownames(installed.packages()) #check if necessary packages are installed
