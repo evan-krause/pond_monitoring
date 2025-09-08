@@ -75,29 +75,53 @@ lp_dat |>
 lp_means |>
   ggplot() +
   geom_col(aes(x = month(date), y = mean_temp, fill = station), position = "dodge") +
-  xlab("month") +
-  ylab("Temperature (deg-C)")
+  labs(x = "month",
+       y = "Temperature (deg-C)") +
+  scale_fill_viridis_d() +
+  theme(
+    legend.position = 'top',
+    legend.key = element_rect(color = 'black'),
+    legend.background = element_rect(fill = 'white'),
+    panel.background = element_rect(fill = "gray"),
+    panel.grid = element_line(colour = 'white'),
+    axis.text.x = element_text(angle = 0,
+                               face = "bold")
+  )
+
 
 #mean chla
 lp_means |>
   ggplot() +
   geom_col(aes(x = month(date), y = mean_chla, fill = station), position = "dodge") +
-  xlab("month") +
-  ylab("Chla (mg/L)")
-
-#mean DO
+  labs(x = "month",
+       y = "Chla (mg/L)") +
+  scale_fill_viridis_d() +
+  theme(
+    legend.position = 'top',
+    legend.key = element_rect(color = 'black'),
+    legend.background = element_rect(fill = 'white'),
+    panel.background = element_rect(fill = "grey"),
+    panel.grid = element_line(colour = 'white'),
+    axis.text.x = element_text(angle = 0,
+                               face = "bold")
+  )
 
 #mean DO
 lp_means |>
   ggplot() +
   geom_col(aes(x = month(date), y = mean_do, fill = station), position = "dodge") +
   geom_hline(yintercept = 5) +
-  xlab("month") +
-  ylab("DO (mg/L)") +
+  labs(x = "month",
+       y = "DO (mg/L)",
+       title = "DO by Site|Month",
+       subtitle = "5 mg/L reference") +
   scale_fill_viridis_d(option = 'D') +
   theme(
-    legend.position = 'bottom',
+    legend.position = 'top',
     legend.key = element_rect(color = 'black'),
     legend.background = element_rect(fill = 'white'),
-    panel.background = element_rect(fill = "gray")
+    panel.background = element_rect(fill = "gray"),
+    panel.grid = element_line(colour = 'white'),
+    axis.text.x = element_text(angle = 0,
+                               face = "bold")
   )
