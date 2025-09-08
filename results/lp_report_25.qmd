@@ -47,7 +47,20 @@ Long Pond is a 177-acre great pond in Rutland, Massachusetts (71°58’45”W, 4
 
 ## Parameter summary table
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+lp_dat |>
+  select(3:length(lp_dat),
+         -depth_m,
+         -bga_rfu,
+         -bga,
+         -chla_rfu,
+         -o2_sat) |>
+  tbl_summary(by = station,
+              statistic = list(all_continuous() ~ "{median} ({p25} - {p75})",
+                               all_categorical() ~ "{n} {p}")) |>
+  bold_labels() |>
+  add_overall()
 
 ```
 
