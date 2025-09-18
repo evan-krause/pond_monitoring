@@ -11,6 +11,15 @@ library(gtsummary)
 
 source('src/lp_clean.R')
 
+report_theme <- theme(
+  legend.position = 'top',
+  legend.key = element_rect(color = 'black'),
+  legend.background = element_rect(fill = 'white'),
+  panel.background = element_rect(fill = "gray"),
+  panel.grid = element_line(colour = 'white'),
+  axis.text.x = element_text(angle = 0,
+                             face = "bold")
+)
 
 # summary statistics + tables ----
 
@@ -75,53 +84,32 @@ lp_dat |>
 lp_means |>
   ggplot() +
   geom_col(aes(x = month(date), y = mean_temp, fill = station), position = "dodge") +
-  labs(x = "month",
-       y = "Temperature (deg-C)") +
+  labs(x = "Month",
+       y = "Temperature (deg-C)",
+       title = "Mean Temperature by Site|Month") +
   scale_fill_viridis_d() +
-  theme(
-    legend.position = 'top',
-    legend.key = element_rect(color = 'black'),
-    legend.background = element_rect(fill = 'white'),
-    panel.background = element_rect(fill = "gray"),
-    panel.grid = element_line(colour = 'white'),
-    axis.text.x = element_text(angle = 0,
-                               face = "bold")
-  )
-
+  report_theme
 
 #mean chla
 lp_means |>
   ggplot() +
   geom_col(aes(x = month(date), y = mean_chla, fill = station), position = "dodge") +
-  labs(x = "month",
-       y = "Chla (mg/L)") +
+  labs(x = "Month",
+       y = "Chla (mg/L)",
+       title = "Mean Chlorophyll-a by Site|Month") +
   scale_fill_viridis_d() +
-  theme(
-    legend.position = 'top',
-    legend.key = element_rect(color = 'black'),
-    legend.background = element_rect(fill = 'white'),
-    panel.background = element_rect(fill = "grey"),
-    panel.grid = element_line(colour = 'white'),
-    axis.text.x = element_text(angle = 0,
-                               face = "bold")
-  )
+  report_theme
 
 #mean DO
 lp_means |>
   ggplot() +
   geom_col(aes(x = month(date), y = mean_do, fill = station), position = "dodge") +
   geom_hline(yintercept = 5) +
-  labs(x = "month",
-       y = "DO (mg/L)",
-       title = "DO by Site|Month",
-       subtitle = "5 mg/L reference") +
-  scale_fill_viridis_d(option = 'D') +
-  theme(
-    legend.position = 'top',
-    legend.key = element_rect(color = 'black'),
-    legend.background = element_rect(fill = 'white'),
-    panel.background = element_rect(fill = "gray"),
-    panel.grid = element_line(colour = 'white'),
-    axis.text.x = element_text(angle = 0,
-                               face = "bold")
-  )
+  labs(
+    x = "Month",
+    y = "DO (mg/L)",
+    title = "Mean Dissolved Oxygen by Site|Month",
+    subtitle = "5 mg/L reference"
+  ) +
+  scale_fill_viridis_d() +
+  report_theme

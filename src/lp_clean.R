@@ -4,10 +4,10 @@
 #data obtained from DRC_DWSP MS Access database in csv format
 
 library(tidyverse)
-library(openxlsx)
+library(readxl)
 
-pond_dat <- read_csv('data/pond_data.csv') #import data from source
-
+# pond_dat <- read_csv('data/pond_data.csv') #import data from source #from csv
+pond_dat <- read_excel("data/long_pond_parameters.xlsx") # from DB xlsx
 
 lp_dat <- pond_dat |> pivot_wider(
   #pivot data into wide format, creating col names from Parameter
@@ -51,5 +51,5 @@ lp_means <- lp_dat |>
             mean_do = mean(do),
             mean_chla = mean(chla))
 
-
+openxlsx::readWorkbook("long_pond_parameter.xlsx")
 
