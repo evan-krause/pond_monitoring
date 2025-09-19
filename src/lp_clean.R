@@ -49,7 +49,8 @@ lp_means <- lp_dat |>
   group_by(date, station)|>
   summarize(mean_temp = mean(temp_c),
             mean_do = mean(do),
-            mean_chla = mean(chla))
+            mean_chla = mean(chla),
+            mean_spc = mean(spc),
+            mean_ph = mean(pH))
 
-openxlsx::readWorkbook("long_pond_parameter.xlsx")
 
