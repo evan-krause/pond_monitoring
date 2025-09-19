@@ -22,10 +22,9 @@ report_theme <- theme(
                              face = "bold")
 )
 
-CHROMOTE_CHROME <- "C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe"
 # summary statistics + tables ----
 
-## summary stat tables----
+## Kable tables----
 sum_stats <- function(x) {
   c(
     "Min" = round(min(x), 3),
@@ -36,80 +35,77 @@ sum_stats <- function(x) {
   )
 }
 
-lp1_dat <- lp_dat |>
-  filter(station == "lp1")
-lp2_dat <- lp_dat |>
-  filter(station == "lp2")
-lp3_dat <- lp_dat |>
-  filter(station == "lp3")
+# lp1_dat <- lp_dat |>
+#   filter(station == "lp1")
+# lp2_dat <- lp_dat |>
+#   filter(station == "lp2")
+# lp3_dat <- lp_dat |>
+#   filter(station == "lp3")
+# 
+# lp1_tbl <- sapply(lp1_dat[c(5, 7, 8, 9, 12, 14)], sum_stats)
+# lp2_tbl <- sapply(lp2_dat[c(5, 7, 8, 9, 12, 14)], sum_stats)
+# lp3_tbl <- sapply(lp3_dat[c(5, 7, 8, 9, 12, 14)], sum_stats)
+# 
+# kable_lp1 <- kable(
+#   lp1_tbl,
+#   col.names = c(
+#     "Temperature (Deg-C)",
+#     "Dissolved Oxygen (mg/L)",
+#     "Specific Conductivity (uS/cm)",
+#     "pH",
+#     "Phycocyanin (ug/L)",
+#     "Chlorophyll-a (ug/L)"
+#   )
+# ) |>
+#   kable_styling("striped")
+# 
+# kable_lp2 <- kable(
+#   lp2_tbl,
+#   col.names = c(
+#     "Temperature (Deg-C)",
+#     "Dissolved Oxygen (mg/L)",
+#     "Specific Conductivity (uS/cm)",
+#     "pH",
+#     "Phycocyanin (ug/L)",
+#     "Chlorophyll-a (ug/L)"
+#   )
+# ) |>
+#   kable_styling("striped")
+# 
+# kable_lp3 <- kable(
+#   lp3_tbl,
+#   col.names = c(
+#     "Temperature (Deg-C)",
+#     "Dissolved Oxygen (mg/L)",
+#     "Specific Conductivity (uS/cm)",
+#     "pH",
+#     "Phycocyanin (ug/L)",
+#     "Chlorophyll-a (ug/L)"
+#   )
+# ) |>
+#   kable_styling("striped")
 
-lp1_tbl <- sapply(lp1_dat[c(5, 7, 8, 9, 12, 14)], sum_stats)
-lp2_tbl <- sapply(lp2_dat[c(5, 7, 8, 9, 12, 14)], sum_stats)
-lp3_tbl <- sapply(lp3_dat[c(5, 7, 8, 9, 12, 14)], sum_stats)
-
-kable_lp1 <- kable(
-  lp1_tbl,
-  col.names = c(
-    "Temperature (Deg-C)",
-    "Dissolved Oxygen (mg/L)",
-    "Specific Conductivity (uS/cm)",
-    "pH",
-    "Phycocyanin (ug/L)",
-    "Chlorophyll-a (ug/L)"
-  )
-) |>
-  kable_styling("striped")
-
-kable_lp2 <- kable(
-  lp2_tbl,
-  col.names = c(
-    "Temperature (Deg-C)",
-    "Dissolved Oxygen (mg/L)",
-    "Specific Conductivity (uS/cm)",
-    "pH",
-    "Phycocyanin (ug/L)",
-    "Chlorophyll-a (ug/L)"
-  )
-) |>
-  kable_styling("striped")
-
-kable_lp3 <- kable(
-  lp3_tbl,
-  col.names = c(
-    "Temperature (Deg-C)",
-    "Dissolved Oxygen (mg/L)",
-    "Specific Conductivity (uS/cm)",
-    "pH",
-    "Phycocyanin (ug/L)",
-    "Chlorophyll-a (ug/L)"
-  )
-) |>
-  kable_styling("striped")
-
-## tables ----
-lp_dat |>
+## Gtsummary tables ----
+param_sum <- lp_dat |>
   select(3:length(lp_dat),
-         -depth_m,
          -bga_rfu,
          -bga,
          -chla_rfu,
+         -turbid_fnu,
          -o2_sat) |>
   tbl_summary(by = station,
               statistic = list(all_continuous() ~ "{mean} ({p25} - {p75})",
-                               all_categorical() ~ "{n} {p}")) |>
-  bold_labels() |>
-  add_overall()
+                               all_categorical() ~ "{n} {p}",
+                               depth_m ~ "{max}"),
+              label = list(depth_m = "Max depth (Meters)",
+              temp_c = "Water Temperature (Deg-C)",
+              do = "Dissolved Oxygen (mg/L)",
+              spc = "Specific Conductance (uS/cm)",
+              chla = "Chlorophyll-a (ug/L)")) |>
+  add_overall(last = TRUE) |>
+  modify_header(label = "**Parameters**")|>
+  bold_labels()
   
-
-
-lp_dat |>
-  select(3:length(lp_dat)) |>
-  tbl_summary(by = station,
-              statistic = list(all_continuous() ~ "{median} ({p25} - {p75})",
-                               all_categorical() ~ "{n} {p}")) |>
-  bold_labels() |>
-  add_overall()
-
 
 # graphics + plots ----
 
@@ -125,20 +121,20 @@ lp_dat |>
 
 
 #column profile?
-lp_dat |>
-  ggplot(aes(color = c(Depth_m))) +
-  geom_point(aes(Depth_m, pH)) +
-  geom_line(aes(Depth_m, pH)) +
-  # geom_point(aes(Depth_m, `Dissolved Oxygen`)) +
-  geom_point(aes(Depth_m, Chlorophyll)) +
-  geom_line(aes(Depth_m, Chlorophyll)) + 
-  geom_point(aes(Depth_m, `Dissolved Oxygen`)) +
-  geom_line(aes(Depth_m, `Dissolved Oxygen`)) +
-  geom_point(aes(Depth_m, pH)) +
-  geom_line(aes(Depth_m, pH)) +
-  facet_wrap(~date, scales = 'free_x') +
-  coord_flip() +
-  scale_x_reverse()
+# lp_dat |>
+#   ggplot(aes(color = c(depth_m))) +
+#   geom_point(aes(depth_m, pH)) +
+#   geom_line(aes(depth_m, pH)) +
+#   # geom_point(aes(Depth_m, `Dissolved Oxygen`)) +
+#   geom_point(aes(depth_m, Chlorophyll)) +
+#   geom_line(aes(depth_m, Chlorophyll)) + 
+#   geom_point(aes(depth_m, `Dissolved Oxygen`)) +
+#   geom_line(aes(depth_m, `Dissolved Oxygen`)) +
+#   geom_point(aes(depth_m, pH)) +
+#   geom_line(aes(depth_m, pH)) +
+#   facet_wrap(~date, scales = 'free_x') +
+#   coord_flip() +
+#   scale_x_reverse()
 
 ## barplots----
 
@@ -201,3 +197,5 @@ lp_means |>
   scale_fill_viridis_d() +
   ylim(limits = c(0,7.5))+
   report_theme
+
+gtsummary::
