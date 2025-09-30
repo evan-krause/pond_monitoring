@@ -5,6 +5,7 @@
 
 library(tidyverse)
 library(readxl)
+library(visdat)
 
 # pond_dat <- read_csv('data/pond_data.csv') #import data from source #from csv
 pond_dat <- read_excel("data/long_pond_parameters.xlsx") # from DB xlsx
@@ -32,7 +33,7 @@ lp_dat <- pond_dat |> pivot_wider(
     chla = "Chlorophyll"
   ) |>
   relocate(where(is.numeric), .after = last_col()) |> # move identifier cols to front
-  select(-Station) #remove old station col
+  select(-Station)  #remove old station col 
 
 lp_dat$station <- fct_collapse(
   lp_dat$station,
@@ -42,7 +43,9 @@ lp_dat$station <- fct_collapse(
   lp3 = "LP3"
 )
 
-#Summary stats
+vis_miss(lp_dat)
+
+#Summary stats----
 
 lp_means <- lp_dat |>
   # filter(station == 'lp1')|>
