@@ -1,7 +1,7 @@
 #Author: Evan Krause
 #created: August 2025
 #data cleaning script for Long Pond monitoring
-#data obtained from DRC_DWSP MS Access database in csv format
+#data obtained from DRC_DWSP MS Access database in csv or xxlsx format
 
 library(tidyverse)
 library(readxl)

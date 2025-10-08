@@ -19,7 +19,6 @@ library(gt)
 library(gtsummary)
 library(kableExtra)
 
-
 report_theme <- theme(
   legend.position = 'top',
   legend.key = element_rect(color = 'black'),
@@ -198,7 +197,7 @@ lp_means |>
 #mean SPC
 lp_means |>
   ggplot() +
-  geom_col(aes(x = month(date), y = mean_spc, fill = station), position = "dodge", ) +
+  geom_col(aes(x = month(date), y = mean_spc, fill = station), position = "dodge") +
   labs(
     x = "Month",
     y = "SPC (uS/cm)",
@@ -206,6 +205,7 @@ lp_means |>
   ) +
   scale_fill_viridis_d(labels = c("LP1", "LP2", "LP3")) +
   report_theme
+
 
 #mean SPC
 lp_means |>
