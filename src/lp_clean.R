@@ -1,7 +1,7 @@
 #Author: Evan Krause
 #created: August 2025
 #data cleaning script for Long Pond monitoring
-#data obtained from DRC_DWSP MS Access database in csv or xxlsx format
+#data obtained from DRC_DWSP MS Access database in csv or xlsx format
 
 library(tidyverse)
 library(readxl)
@@ -43,7 +43,7 @@ lp_dat$station <- fct_collapse(
   lp3 = "LP3"
 )
 
-vis_miss(lp_dat)
+vis_miss(lp_dat) # visualize missing data (if applicable)
 
 #Summary stats----
 

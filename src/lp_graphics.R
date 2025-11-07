@@ -23,8 +23,8 @@ report_theme <- theme(
   legend.position = 'top',
   legend.key = element_rect(color = 'black'),
   legend.background = element_rect(fill = 'white'),
-  panel.background = element_rect(fill = "gray"),
-  panel.grid = element_line(colour = 'white'),
+  panel.background = element_rect(fill = "white"),
+  panel.grid = element_line(colour = 'gray'),
   axis.text.x = element_text(angle = 0,
                              face = "bold")
 )
@@ -219,4 +219,20 @@ lp_means |>
   scale_fill_viridis_d(labels = c("LP1", "LP2", "LP3")) +
   ylim(limits = c(0,7.5))+
   report_theme
+
+lp_dat |> 
+  ggplot() +
+  geom_boxplot(aes(x = station, y = spc))
+
+lp_dat |> 
+  ggplot() +
+  geom_boxplot(aes(x = station, y = pH))
+
+lp_dat |> 
+  ggplot() +
+  geom_boxplot(aes(x = station, y = temp_c))
+
+lp_dat |> 
+  ggplot() +
+  geom_boxplot(aes(x = station, y = bga))
 
