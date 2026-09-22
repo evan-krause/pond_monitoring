@@ -1,5 +1,6 @@
 #Author: Evan Krause
 #created: August 2025
+#updated: August 2026
 #data cleaning script for Long Pond monitoring
 #data obtained from DRC_DWSP MS Access database in csv or xlsx format
 
@@ -7,17 +8,31 @@ library(tidyverse)
 library(readxl)
 library(visdat)
 
-# pond_dat <- read_csv('data/pond_data.csv') #import data from source #from csv
-pond_dat <- read_excel("data/long_pond_parameters.xlsx") # from DB xlsx
+#data import----
 
-lp_dat <- pond_dat |> pivot_wider(
+#import data from source as .xlsx
+raw_dat <- if (file.exists("data/lpm_data.xlsx") == TRUE) {
+  read_excel("data/lpm_data.xlsx")
+} else {
+  path <- file.choose()
+  raw_dat <- read_excel(path) # from DB xlsx
+}
+
+#data cleaning----
+lp_dat <- raw_dat |> pivot_wider(
   #pivot data into wide format, creating col names from Parameter
   names_from = Parameter,
   values_from = FinalResult,
   id_cols = c(Depth_m, DateTimeET, Station)
 ) |>
-  filter(Station %in% c("lp1", "LP1", "LP2", "LP3")) |> # keep only longPond sites
-  mutate(date = as.Date(DateTimeET), station = as.factor(Station)) |> #factor and date coercion
+  filter(Station %in% c("lp1", "lp3", "lp2", "LP1", "LP2", "LP3")) |> # keep only longPond sites
+  mutate(
+    date = as.Date(DateTimeET),
+    station = as.factor(Station),
+    year = as.factor(year(DateTimeET)),
+    month = as.factor(month(DateTimeET)),
+    across(where(is.numeric), ~ if_else(. < 0, 0, .))
+  ) |> #factor and date coercion
   rename(
     #rename cols to more usable formats
     depth_m = "Depth_m",
@@ -33,27 +48,19 @@ lp_dat <- pond_dat |> pivot_wider(
     chla = "Chlorophyll"
   ) |>
   relocate(where(is.numeric), .after = last_col()) |> # move identifier cols to front
-  select(-Station)  #remove old station col 
+  select(-Station)  #remove old station col
 
 lp_dat$station <- fct_collapse(
   lp_dat$station,
   #condense and lower site names
   lp1 = c("lp1", "LP1"),
-  lp2 = "LP2",
-  lp3 = "LP3"
+  lp2 = c("lp2", "LP2"),
+  lp3 = c("lp3", "LP3")
 )
 
-vis_miss(lp_dat) # visualize missing data (if applicable)
+#RDS----
+saveRDS(lp_dat, file = "data/lp_cleaned.rds")
+# vis_miss(lp_dat) # visualize missing data (if applicable)
 
-#Summary stats----
-
-lp_means <- lp_dat |>
-  # filter(station == 'lp1')|>
-  group_by(date, station)|>
-  summarize(mean_temp = mean(temp_c),
-            mean_do = mean(do),
-            mean_chla = mean(chla),
-            mean_spc = mean(spc),
-            mean_ph = mean(pH))
 
 

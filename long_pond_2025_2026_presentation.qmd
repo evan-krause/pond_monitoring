@@ -1,0 +1,91 @@
+---
+title: "Long Pond Monitoring: 2025 vs. 2026 (LP2 & LP3)"
+format: revealjs
+---
+
+## About this presentation
+
+::: callout-note
+This report was generated using AI under general human direction. The contents have been reviewed and validated by Evan Krause, Aquatic biologist I on 2026-09-11.
+:::
+
+## Temperature
+
+::::: columns
+::: {.column width="50%"}
+![LP2](outputs/heatmaps/temp_c_lp2.png)
+:::
+
+::: {.column width="50%"}
+![LP3](outputs/heatmaps/temp_c_lp3.png)
+:::
+:::::
+
+## Dissolved oxygen — depth profile
+
+::::: columns
+::: {.column width="50%"}
+![LP2](outputs/heatmaps/do_lp2.png)
+:::
+
+::: {.column width="50%"}
+![LP3](outputs/heatmaps/do_lp3.png)
+:::
+:::::
+
+## Dissolved oxygen — summary
+
+::::: columns
+::: {.column width="50%"}
+![Mean ± SE](outputs/barcharts/do_lp2_lp3.png)
+:::
+
+::: {.column width="50%"}
+![Median ± IQR](outputs/barcharts/do_lp2_lp3_median.png)
+:::
+:::::
+
+## Chlorophyll-a — depth profile
+
+::::: columns
+::: {.column width="50%"}
+![LP2](outputs/heatmaps/chla_lp2.png)
+:::
+
+::: {.column width="50%"}
+![LP3](outputs/heatmaps/chla_lp3.png)
+:::
+:::::
+
+## Chlorophyll-a — summary
+
+::::: columns
+::: {.column width="50%"}
+![Mean ± SE](outputs/barcharts/chla_lp2_lp3.png)
+:::
+
+::: {.column width="50%"}
+![Median ± IQR](outputs/barcharts/chla_lp2_lp3_median.png)
+:::
+:::::
+
+## Specific conductance
+
+::::: columns
+::: {.column width="50%"}
+![Distribution by site and year](outputs/boxplots/spc_lp2_lp3_presentation.png)
+:::
+
+::: {.column width="50%"}
+![Mean ± SE](outputs/barcharts/spc_lp2_lp3.png)
+:::
+:::::
+
+## Summary and takeaways
+
+- Temperature and specific conductance increased from 2025 to 2026 at both LP2 and LP3.
+- Dissolved oxygen and chlorophyll-a decreased from 2025 to 2026 at both sites.
+- After correcting for multiple comparisons (two-way ANOVA, station x year), only the specific conductance increase was statistically significant (p \< 0.001); the DO and chlorophyll-a decreases were not significant given the limited sample size.
+- No significant differences between LP2 and LP3, and no site x year interaction — where a year effect exists, it appears consistent across sites.
+- One LP3 sensor cast on 2026-07-20 produced clearly implausible pH and specific conductance readings and was excluded from the relevant analyses.
+- For 2027: consider reinstating LP1 monitoring, restoring the full May–September sampling window, and checking pH sensor calibration.

@@ -1,16 +1,21 @@
 #Author: Evan Krause
 #created: August 2025
+#updated: August 2026
 #data vis script for Long Pond monitoring
 #data obtained from DRC_DWSP MS Access database in csv format
 
-pkg <- c('tidyverse', 'gtsummary', 'GGally', 'gt', 'gtsummary', 'kableExtra')
+
+pkg <- c('tidyverse',
+         'gtsummary',
+         'GGally',
+         'gt',
+         'gtsummary',
+         'kableExtra')
 
 installed_packages <- pkg %in% rownames(installed.packages()) #check if necessary packages are installed
 if (any(installed_packages == FALSE)) {
   install.packages(pkg[!installed_packages])#install if not in installed_packages list
 }
-
-source('src/lp_clean.R')
 
 library(tidyverse)
 library(gtsummary)
@@ -19,14 +24,25 @@ library(gt)
 library(gtsummary)
 library(kableExtra)
 
+lp_cleaned_path <- "data/lp.cleaned.rds"
+
+if (file.exists(lp_cleaned_path)) {
+  lp_dat <- readRDS(lp_cleaned_path) # load previously cleaned data from lp_clean.R
+} else {
+  source('src/lp_clean.R')
+}
+      
+#bring in means calculations      
+source('src/lp_data_trans.R')
+
+
 report_theme <- theme(
   legend.position = 'top',
   legend.key = element_rect(color = 'black'),
   legend.background = element_rect(fill = 'white'),
   panel.background = element_rect(fill = "white"),
   panel.grid = element_line(colour = 'gray'),
-  axis.text.x = element_text(angle = 0,
-                             face = "bold")
+  axis.text.x = element_text(angle = 0, face = "bold")
 )
 
 # summary statistics + tables ----
@@ -166,17 +182,17 @@ lp_means |>
        y = "Temperature (deg-C)",
        title = "Mean Temperature by Site|Month") +
   scale_fill_viridis_d(labels = c("LP1", "LP2", "LP3")) +
-  report_theme
+  report_theme +
+  facet_grid(~year)
 
 #mean chla
 lp_means |>
   ggplot() +
   geom_col(aes(x = month(date), y = mean_chla, fill = station), position = "dodge") +
-  labs(x = "Month",
-       y = "Chla (mg/L)",
-       title = "Mean Chlorophyll-a by Site|Month") +
+  labs(x = "Month", y = "Chla (mg/L)", title = "Mean Chlorophyll-a by Site|Month") +
   scale_fill_viridis_d(labels = c("LP1", "LP2", "LP3")) +
-  report_theme
+  report_theme + 
+  facet_grid(~year)
 
 #mean DO
 lp_means |>
@@ -192,47 +208,57 @@ lp_means |>
   scale_fill_viridis_d(labels = c("LP1", "LP2", "LP3")) +
   report_theme +
   theme(axis.title.y = element_text(size = rel(1), angle = 90),
-        legend.text = element_text())
+        legend.text = element_text()) +
+  facet_grid(~year)
 
 #mean SPC
 lp_means |>
+  filter(month(date) %in% c("6","7","8"),
+         station %in% c("lp2", "lp3"))|>
   ggplot() +
   geom_col(aes(x = month(date), y = mean_spc, fill = station), position = "dodge") +
   labs(
     x = "Month",
     y = "SPC (uS/cm)",
-    title = "Mean Specific conductivity by Site|Month",
-  ) +
-  scale_fill_viridis_d(labels = c("LP1", "LP2", "LP3")) +
-  report_theme
+    title = "Mean Specific conductivity by Site|Month|Year"
+  ) + scale_fill_viridis_d(labels = c("LP2", "LP3"))+
+  report_theme +
+  facet_grid(~year)
 
 
-#mean SPC
+#mean DO
 lp_means |>
+  filter(month(date) %in% c("6", "7", "8"), station %in% c("lp2", "lp3")) |>
   ggplot() +
-  geom_col(aes(x = month(date), y = mean_ph, fill = station), position = "dodge", ) +
-  labs(
-    x = "Month",
-    y = "SPC (uS/cm)",
-    title = "Mean Specific Conductivity by Site|Month",
-  ) +
-  scale_fill_viridis_d(labels = c("LP1", "LP2", "LP3")) +
-  ylim(limits = c(0,7.5))+
-  report_theme
+  geom_col(aes(x = month(date), y = mean_do, fill = station), position = "dodge", ) +
+  labs(x = "Month", y = "DO (mg/L)", title = "Mean Dissolved Oxygen by Site|Month|Year", ) +
+  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
+  ylim(limits = c(0, 10)) +
+  report_theme +
+  facet_grid( ~ year) 
 
-lp_dat |> 
+#mean temp
+lp_means |>
+  filter(month(date) %in% c("6", "7", "8"), station %in% c("lp2", "lp3")) |>
   ggplot() +
-  geom_boxplot(aes(x = station, y = spc))
+  geom_col(aes(x = month(date), y = mean_temp, fill = station), position = "dodge", ) +
+  labs(x = "Month", y = "Degrees C", title = "Mean Temperature by Site|Month|Year", ) +
+  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
+  ylim(limits = c(0, 30)) +
+  report_theme +
+  facet_grid( ~ year) 
 
-lp_dat |> 
-  ggplot() +
-  geom_boxplot(aes(x = station, y = pH))
+lp_dat |>
+  filter(depth_m > 0.05,
+         station %in% c("lp2", "lp3"),
+         month %in% c(6,7,8)) |>
+  ggplot(aes(color = year)) +
+  geom_boxplot(aes(x = station, y = spc)) + facet_grid( ~ month(date))
 
-lp_dat |> 
-  ggplot() +
-  geom_boxplot(aes(x = station, y = temp_c))
-
-lp_dat |> 
-  ggplot() +
-  geom_boxplot(aes(x = station, y = bga))
+lp_dat |>
+  filter(month %in% c(6, 7, 8), depth_m > 0.01) |>
+  ggplot(aes(do, depth_m, color = year)) +
+  geom_point() +
+  facet_grid( ~ year) +
+  coord_flip()
 
