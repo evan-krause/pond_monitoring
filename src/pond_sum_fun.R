@@ -4,9 +4,9 @@ pond_sum <- function(data, group.by) {
     group_by({{group.by}}) |>
     summarize(
       max_depth = max(depth_m),
-      ph_range = round(max(pH) - min(pH), 2),
-      avg_temp = mean(temp_c),
-      avg_do = mean(do),
+      #ph_range = round(max(pH) - min(pH), 2),
+      mean_temp = mean(temp_c),
+      mean_do = mean(do),
       avg_chl_mgl = mean(chla),
       n = n()
     ) |>

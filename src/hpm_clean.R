@@ -2,7 +2,7 @@
 # Holding ponds monitoring data prep
 # Author: Evan Krause
 # Created: 7/15/2026
-# Last updated: 9/15/2026
+# Last updated: 9/16/2026
 # data cleaning script for Holding pond monitoring
 # data obtained from DCR_DWSP MS Access database in csv or xlsx format
 ###
@@ -12,31 +12,33 @@ library(tidyverse)
 library(readxl)
 library(visdat)
 
- #import data from source #from csv
+# data import ----
+#choose file from dialog
 file <- file.choose()
 
-raw_dat <- if (str_detect(file, ".csv") == TRUE) {
-  read_csv(file)
+raw_dat <- if (stringr::str_detect(file, ".csv") == TRUE) {
+  dplyr::read_csv(file)
 } else {
-  read_excel(file)
+  readxl::read_excel(file)
 } 
 
-
-hpm_dat <- raw_dat |> pivot_wider(
+# data cleaning ----
+hpm_dat <- raw_dat |> tidyr::pivot_wider(
   #pivot data into wide format, creating col names from Parameter
   names_from = Parameter,
   values_from = FinalResult,
   id_cols = c(Depth_m, DateTimeET, Station)
 ) |>
-  mutate(
+  dplyr::mutate(  #factor and date coercion
     station = as.factor(Station),
     date = as.Date(DateTimeET),
-    year = as.factor(year(DateTimeET)),
-    month = as.factor(month(DateTimeET)),
-    across(where(is.numeric), ~ if_else(. < 0, 0, .))
-  ) |> #factor and date coercion
-  rename(
-    #rename cols to more usable formats
+    year = as.factor(lubridate::year(DateTimeET)),
+    month = as.factor(lubridate::month(DateTimeET)),
+    dplyr::across(dplyr::where(is.numeric), ~ dplyr::if_else(. < 0, 0, .)) 
+    # for all numeric cols, if result is less than zero, become zero. Else, no change
+  ) |>
+  dplyr::rename(
+    #rename cols to more tidy format
     depth_m = "Depth_m",
     datetime = "DateTimeET",
     temp_c = "Water Temperature",
@@ -49,26 +51,13 @@ hpm_dat <- raw_dat |> pivot_wider(
     chla_rfu = "Chlorophyll RFU",
     chla = "Chlorophyll"
   ) |>
-  relocate(where(is.numeric), .after = last_col()) |> # move identifier cols to front
-  select(-Station) |> #remove old station col
-  filter(station %in% c("301", "302")) #filter by station
+  dplyr::relocate(dplyr::where(is.numeric), .after = last_col()) |> # move identifier cols to front
+  dplyr::select(-Station) |> #remove old station col
+  dplyr::filter(station %in% c("301", "302")) #filter by station
 
+hpm_dat$station <- droplevels(hpm_dat$station) #drop unused factor levels from remaining dataset
 
+visdat::vis_miss(hpm_dat) # visualize for missing data (if applicable)
 
-vis_miss(hpm_dat) # visualize missing data (if applicable)
-
-#replace negatives with zeros in applicable columns 
-
-#Summary stats----
-# 
-# pond_means <- hpm_dat |>
-#   # filter(station == 'lp1')|>
-#   # group_by(date, station)|>
-#   summarize(.by = c(date, station),
-#             mean_temp = mean(temp_c),
-#             mean_do = mean(do),
-#             mean_chla = mean(chla),
-#             mean_spc = mean(spc),
-#             mean_ph = mean(pH))
-# 
+saveRDS(hpm_dat, file = "data/hpm_cleaned.rds") #save cleaned data to rds for analysis/viz
 

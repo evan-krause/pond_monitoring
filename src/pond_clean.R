@@ -4,7 +4,14 @@
 # fucntion for transforming watershed pond data for ease of analysis
 
 pond_clean <- function(x) {
-  raw_dat <- readxl::read_excel(paste0("data/", x)) # from DB xlsx
+  
+  raw_dat <- if (file.exists(paste0("data/", {{x}})) == TRUE) {
+    readxl::read_excel(paste0("data/", {{x}}))
+  } else {
+    path <- file.choose()
+    raw_dat <- readxl::read_excel(path)
+  }
+  
   clean_dat <- raw_dat |> tidyr::pivot_wider(
     #pivot data into wide format, creating col names from Parameter
     names_from = Parameter,
@@ -30,5 +37,15 @@ pond_clean <- function(x) {
   data<- clean_dat
 }
 
-d_clean <- function(x) {
-  raw_dat <- readxl::read_excel(paste0("data/", x))}
+pond_dat <- pond_clean("pond_data.xlsx")
+lp_dat <- pond_dat |>
+  forcats::fct_collapse(
+    pond_dat$station,
+    #condense and lower site names
+    lp1 = c("lp1", "LP1"),
+    lp2 = c("lp2", "LP2"),
+    lp3 = c("lp3", "LP3")
+  ) |>
+  dplyr::filter(station %in% c("lp1", "lp2", "lp3")) 
+hpm_dat <- pond_dat |>
+  dplyr::filter(station %in% c("301", "302"))

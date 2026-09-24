@@ -93,7 +93,7 @@ plot_profile_heatmap <- function(param, station_id, data = pond_dat) {
 params <- c("temp_c", "o2_sat", "do", "spc", "pH", "turbid_fnu", "bga_rfu", "bga", "chla_rfu", "chla")
 stations <- levels(pond_dat$station)
 
-combos <- expand_grid(param = params, station_id = c("301", "302"))
+combos <- tidyr::expand_grid(param = params, station_id = stations)
 
 profile_plots <- purrr::map2(
   combos$param, combos$station_id,
