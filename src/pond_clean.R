@@ -28,8 +28,9 @@ installed_packages <- pkg %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {
   install.packages(pkg[!installed_packages])
 }
-
-## function----
+ sapply(pkg, library, character.only= TRUE)
+ map(pkg, library)
+## functions----
 pond_clean <- function(x) {
   raw_dat <- if (file.exists(paste0("data/", {{x}})) == TRUE) {
     readxl::read_excel(paste0("data/", {{x}}))
@@ -70,6 +71,19 @@ pond_clean <- function(x) {
   data <- clean_dat
 }
 
+pond_sum <- function(data, group.by) {
+  data |>
+    group_by({{group.by}}) |>
+    summarize(
+      max_depth = max(.data$depth_m),
+      ph_range = round(max(.data$pH) - min(.data$pH), 2),
+      avg_temp = mean(.data$temp_c),
+      avg_do_pct = mean(.data$do),
+      avg_chl_ugl = mean(.data$chla),
+      n = n()
+    ) |>
+    arrange(desc(n))
+}
 # function call----
 pond_dat <- pond_clean("pond_data.xlsx")
 
@@ -83,15 +97,22 @@ pond_dat$station <- forcats::fct_collapse(
 )
 
 #filter long pond sites
-lp_dat <- pond_dat |>
-  dplyr::filter(station %in% c("lp1", "lp2", "lp3"))
-lp_dat$station <- droplevels(lp_dat$station)
+lpm_dat <- pond_dat |>
+  dplyr::filter(station %in% c("lp2", "lp3"),
+                depth_m > 0.04)
+
+lpm_dat$station <- droplevels(lp_dat$station)
+
 #filter holding ponds sites
 hpm_dat <- pond_dat |>
-  dplyr::filter(station %in% c("301", "302"))
+  dplyr::filter(station %in% c("301", "302"),
+                depth_m > 0.4)
+
 hpm_dat$station <- droplevels(hpm_dat$station)
+
+
 
 #save rds for analysis/viz----
 saveRDS(hpm_dat, "data/hpm_cleaned.rds")
-saveRDS(lp_dat, "data/lp_cleaned.rds")
+saveRDS(lpm_dat, "data/lp_cleaned.rds")
   

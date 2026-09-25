@@ -51,11 +51,11 @@ pond_sum <- function(data, group.by) {
   data |>
     group_by({{group.by}}) |>
     summarize(
-      max_depth = max(4),
-      ph_range = round(max(9) - min(9), 2),
-      avg_temp = mean(5),
-      avg_do_pct = mean(7),
-      avg_chl_ugl = mean(14),
+      max_depth = max(.data$depth_m),
+      ph_range = round(max(.data$pH) - min(.data$pH), 2),
+      avg_temp = mean(.data$temp_c),
+      avg_do_pct = mean(.data$do),
+      avg_chl_ugl = mean(.data$chla),
       n = n()
     ) |>
     arrange(desc(n))

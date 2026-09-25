@@ -57,7 +57,7 @@ params <- c(
 
 means_params <- names(lp_means[,4:7])
 
-stations <- levels(pond_dat$station)
+stations <- levels(hpm_dat$station)
 
 boxplot_plots <- purrr::map(params, plot_param_boxplot) |>
   purrr::set_names(paste0(params, "_", stations, sep = "_")) |>

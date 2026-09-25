@@ -1,6 +1,6 @@
 #author: Evan Krause
-#last update: 2026-09-24
-# 
+#last update: 2026-09-25
+#purpose: to summarize 
 
 
 pkg <- c("tidyverse")
@@ -23,10 +23,23 @@ if (file.exists(clean_path)) {
 lp_means <- lp_dat |>
   dplyr::summarize(
     .by = c(year, date, station),
-    mean_temp = mean(temp_c),
-    mean_do = mean(do),
-    mean_chla = mean(chla),
-    mean_spc = mean(spc),
-    mean_ph = mean(pH)
-  )
+    mean_temp = round(mean(temp_c), 3),
+    mean_do = round(mean(do), 3),
+    mean_chla = round(mean(chla), 3),
+    mean_spc = round(mean(spc), 3),
+    mean_ph = round(mean(pH), 3)
+  ) |> drop_na() #drop NA rows 
 
+pond_sum <- function(data, group.by) {
+  data |>
+    group_by({{group.by}}) |>
+    summarize(
+      max_depth = max(.data$depth_m),
+      ph_range = round(max(.data$pH) - min(.data$pH), 2),
+      avg_temp = mean(.data$temp_c),
+      avg_do_pct = mean(.data$do),
+      avg_chl_ugl = mean(.data$chla),
+      n = n()
+    ) |>
+    arrange(desc(n))
+}
