@@ -50,7 +50,7 @@ lp_dat <- raw_dat |> pivot_wider(
   relocate(where(is.numeric), .after = last_col()) |> # move identifier cols to front
   select(-Station)  #remove old station col
 
-lp_dat$station <- fct_collapse(
+lp_dat$station <- forcats::fct_collapse(
   lp_dat$station,
   #condense and lower site names
   lp1 = c("lp1", "LP1"),

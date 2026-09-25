@@ -14,27 +14,29 @@ library(tidyverse)
 
 ## Data ----
 
+
+
 ## Boxplot functions ----
 
 plot_param_boxplot <- function(param, data = pond_dat, min_n = 5) {
   df <- data |>
-    filter(!is.na(.data[[param]])) |>
-    group_by(station, year) |>
-    filter(n() >= min_n) |>
-    ungroup()
+    dplyr::filter(!is.na(.data[[param]])) |>
+    dplyr::group_by(station, year) |>
+    dplyr::filter(dplyr::n() >= min_n) |>
+    dplyr::ungroup()
   
   if (nrow(df) == 0)
     return(NULL)
   
-  ggplot(df, aes(x = station, y = .data[[param]], fill = year)) +
-    geom_boxplot(position = position_dodge2(preserve = "single")) +
-    scale_fill_viridis_d(name = "Year") +
-    labs(
+  ggplot2::ggplot(df, ggplot2::aes(x = station, y = .data[[param]], fill = year)) +
+    ggplot2::geom_boxplot(position = ggplot2::position_dodge2(preserve = "single")) +
+    ggplot2::scale_fill_viridis_d(name = "Year") +
+    ggplot2::labs(
       x = "Station",
       y = param,
       title = paste("Distribution of", param, "by site and year")
     ) +
-    theme_minimal()
+    ggplot2::theme_minimal()
 }
 
 
@@ -52,6 +54,9 @@ params <- c(
   "chla_rfu",
   "chla"
 )
+
+means_params <- names(lp_means[,4:7])
+
 stations <- levels(pond_dat$station)
 
 boxplot_plots <- purrr::map(params, plot_param_boxplot) |>
@@ -76,11 +81,4 @@ walk2(
   )
 )
 
-ggsave(
-  filename = file.path(boxplot_out_dir, "spc_lp2_lp3_presentation.png"),
-  plot = spc_presentation_plot,
-  width = 7,
-  height = 5,
-  dpi = 150
-)
 
