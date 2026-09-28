@@ -1,6 +1,6 @@
 #Author: Evan Krause
 #created: August 2025
-#updated: August 2026
+#updated: 2026-09-28
 #data vis script for Long Pond monitoring
 #data obtained from DRC_DWSP MS Access database in csv format
 
@@ -17,38 +17,34 @@ if (any(installed_packages == FALSE)) {
   install.packages(pkg[!installed_packages])#install if not in installed_packages list
 }
 
-library(tidyverse)
-library(gtsummary)
-library(GGally)
-library(gt)
-library(gtsummary)
-library(kableExtra)
+sapply(pkg, library, character.only= TRUE)
 
-lp_cleaned_path <- "data/lp.cleaned.rds"
-
-if (file.exists(lp_cleaned_path)) {
-  lp_dat <- readRDS(lp_cleaned_path) # load previously cleaned data from lp_clean.R
-} else {
-  source('src/lp_clean.R')
-}
-      
-#bring in means calculations      
-source('src/lp_data_trans.R')
-
-
+# Report theme
 report_theme <- theme(
   legend.position = 'top',
   legend.key = element_rect(color = 'black'),
   legend.background = element_rect(fill = 'white'),
-  panel.background = element_rect(fill = "white"),
-  panel.grid = element_line(colour = 'gray'),
+  panel.background = element_rect(fill = "gray"),
+  panel.grid = element_line(colour = 'white'),
   axis.text.x = element_text(angle = 0, face = "bold")
 )
 
 
-lp_26<- lp_dat |>
-  filter(year == 2026)
-lp_26 <- droplevels(lp_dat$station)  
+
+# Data import----
+lp_cleaned_path <- "data/lp_cleaned.rds"
+
+if (file.exists(lp_cleaned_path)) {
+  lp_dat <- readRDS(lp_cleaned_path) # load previously cleaned data from lp_clean.R
+} else {
+  source('src/pond_clean.R')
+}
+
+
+#bring in means calculations      
+source('src/lp_data_trans.R')
+
+
 
 # summary statistics + tables ----
 
@@ -70,55 +66,60 @@ lp2_dat <- lp_dat |>
 lp3_dat <- lp_dat |>
   filter(station == "lp3")
 
-lp1_tbl <- sapply(lp1_dat[c(5, 7, 8, 9, 12, 14)], sum_stats)
-lp2_tbl <- sapply(lp2_dat[c(5, 7, 8, 9, 12, 14)], sum_stats)
-lp3_tbl <- sapply(lp3_dat[c(5, 7, 8, 9, 12, 14)], sum_stats)
+# lp1_tbl <- sapply(lp1_dat[c(7, 9,10, 14,16)], sum_stats)
+# lp2_tbl <- sapply(lp2_dat[c(5, 7, 8, 9, 12, 14)], sum_stats)
+# lp3_tbl <- sapply(lp3_dat[c(5, 7, 8, 9, 12, 14)], sum_stats)
 
 
-
-kable_lp1 <- kable(
-  lp1_tbl,
-  col.names = c(
-    "Temperature (Deg-C)",
-    "Dissolved Oxygen (mg/L)",
-    "Specific Conductivity (uS/cm)",
-    "pH",
-    "Phycocyanin (ug/L)",
-    "Chlorophyll-a (ug/L)"
-  )
-) |>
-  kable_styling("striped")
-
-kable_lp2 <- kable(
-  lp2_tbl,
-  col.names = c(
-    "Temperature (Deg-C)",
-    "Dissolved Oxygen (mg/L)",
-    "Specific Conductivity (uS/cm)",
-    "pH",
-    "Phycocyanin (ug/L)",
-    "Chlorophyll-a (ug/L)"
-  )
-) |>
-  kable_styling("striped")
-
-kable_lp3 <- kable(
-  lp3_tbl,
-  col.names = c(
-    "Temperature (Deg-C)",
-    "Dissolved Oxygen (mg/L)",
-    "Specific Conductivity (uS/cm)",
-    "pH",
-    "Phycocyanin (ug/L)",
-    "Chlorophyll-a (ug/L)"
-  )
-) |>
-  kable_styling("striped")
+lp_26 <- lp_dat |>
+  filter(station %in% c("lp2" ,"lp3"),
+         year == 2026)
+lp_26 <- droplevels(lp_26)
+# 
+# kable_lp1 <- kable(
+#   lp1_tbl,
+#   col.names = c(
+#     "Temperature (Deg-C)",
+#     "Dissolved Oxygen (mg/L)",
+#     "Specific Conductivity (uS/cm)",
+#     "pH",
+#     "Phycocyanin (ug/L)",
+#     "Chlorophyll-a (ug/L)"
+#   )
+# ) |>
+#   kable_styling("striped")
+# 
+# kable_lp2 <- kable(
+#   lp2_tbl,
+#   col.names = c(
+#     "Temperature (Deg-C)",
+#     "Dissolved Oxygen (mg/L)",
+#     "Specific Conductivity (uS/cm)",
+#     "pH",
+#     "Phycocyanin (ug/L)",
+#     "Chlorophyll-a (ug/L)"
+#   )
+# ) |>
+#   kable_styling("striped")
+# 
+# kable_lp3 <- kable(
+#   lp3_tbl,
+#   col.names = c(
+#     "Temperature (Deg-C)",
+#     "Dissolved Oxygen (mg/L)",
+#     "Specific Conductivity (uS/cm)",
+#     "pH",
+#     "Phycocyanin (ug/L)",
+#     "Chlorophyll-a (ug/L)"
+#   )
+# ) |>
+#   kable_styling("striped")
 
 ## Gtsummary tables ----
 param_sum <- lp_26 |>
-  filter(station %in% c("lp2", "lp3"))|>
-  select(3,4,6,7,8,9,10,14,16,
+  filter(station %in% c("lp2", "lp3"),
+         year == 2026)|>
+  select(3,6,7,9,16,10,
          -1,
          -2,
          -5,-11,-12,-13,-15) |>
@@ -129,7 +130,8 @@ param_sum <- lp_26 |>
       depth_m ~ "{max}",
       temp_c ~ "{median} ({min} - {max}) \n {mean} ({sd})",
       do ~ "{median} ({min} - {max}) \n {mean} ({sd})",
-      chla ~ "{median} ({min} - {max}) \n {mean} ({sd})"
+      chla ~ "{median} ({min} - {max}) \n{mean} ({sd})",
+      spc ~ "\n{mean} ({sd})"
     ),
     label = list(
       depth_m = "Max depth (Meters)",
@@ -138,7 +140,7 @@ param_sum <- lp_26 |>
       chla = "Chlorophyll-a (ug/L)",
       spc = "Specific Conductance (uS/cm)"
     )
-  ) |>
+  )  |>
   add_overall(last = TRUE) |>
   bold_labels() 
   
@@ -147,10 +149,10 @@ param_sum <- lp_26 |>
 
 ## pairplots ----
 
-# lp_dat |>
-#   # filter() |>
-#   select(c(5,7,8,9,12,14)) |>
-#   ggpairs()
+lp_26 |>
+  # filter() |>
+  select(c(6,7,9,10,16)) |>
+  ggpairs()
 
 ## point-plots ----
 
@@ -176,29 +178,34 @@ param_sum <- lp_26 |>
 ###lp_means by month plots----
 #mean temp
 lp_means |>
-  filter(station %in% c("lp2", "lp3")) |>
+  filter(station %in% c("lp2", "lp3"),
+         year == 2026) |>
+  # mutate(month = factor(.data[[,5]], levels = c("June", "July", "August", "September")))|>
   ggplot() +
   geom_col(aes(x = month(date), y = mean_temp, fill = station), position = "dodge") +
   labs(x = "Month",
        y = "Temperature (deg-C)",
        title = "Mean Temperature by Site|Month") +
-  scale_fill_viridis_d(labels = c("LP1", "LP2", "LP3")) +
+  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
   report_theme +
+  theme(plot.subtitle = NULL)
   facet_grid(~year)
 
 #mean chla
 lp_means |>
-  filter(station %in% c("lp2", "lp3")) |>
+  filter(station %in% c("lp2", "lp3"),
+         year == 2026) |>
   ggplot() +
   geom_col(aes(x = month(date), y = mean_chla, fill = station), position = "dodge") +
   labs(x = "Month", y = "Chla (mg/L)", title = "Mean Chlorophyll-a by Site|Month") +
-  scale_fill_viridis_d(labels = c("LP1", "LP2", "LP3")) +
-  report_theme + 
+  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
+  report_theme + theme(plot.subtitle = NULL)
   facet_grid(~year)
 
 #mean DO
 lp_means |>
-  filter(station %in% c("lp2", "lp3")) |>
+  filter(station %in% c("lp2", "lp3"),
+         year == 2026) |>
   ggplot() +
   geom_col(aes(x = month(date), y = mean_do, fill = station), position = "dodge") +
   geom_hline(yintercept = 6) +
@@ -208,15 +215,16 @@ lp_means |>
     title = "Mean Dissolved Oxygen by Site|Month",
     subtitle = "6 mg/L reference"
   ) +
-  scale_fill_viridis_d(labels = c("LP1", "LP2", "LP3")) +
+  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
   report_theme +
   theme(axis.title.y = element_text(size = rel(1), angle = 90),
-        legend.text = element_text()) +
-  facet_grid(~year)
+        legend.text = element_text()) 
+  # facet_grid(~year)
 
 #mean SPC
 lp_means |>
-  filter(station %in% c("lp2", "lp3")) |>
+  filter(station %in% c("lp2", "lp3"),
+         year == 2026) |>
   ggplot() +
   geom_col(aes(x = month(date), y = mean_spc, fill = station), position = "dodge") +
   labs(x = "Month", y = "SPC (uS/cm)", 

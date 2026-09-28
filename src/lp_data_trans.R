@@ -1,9 +1,7 @@
 #author: Evan Krause
-#last update: 2026-09-25
+#last update: 2026-09-28
 #purpose: to summarize 
 
-
-pkg <- c("tidyverse")
 
 installed_packages <- pkg %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {
@@ -23,12 +21,12 @@ if (file.exists(clean_path)) {
 lp_means <- lp_dat |>
   dplyr::summarize(
     .by = c(year, date, station),
-    mean_temp = round(mean(temp_c), 3),
-    mean_do = round(mean(do), 3),
-    mean_chla = round(mean(chla), 3),
-    mean_spc = round(mean(spc), 3),
-    mean_ph = round(mean(pH), 3)
-  ) |> drop_na() #drop NA rows 
+    mean_temp = round(mean(temp_c, na.rm = TRUE), 3),
+    mean_do = round(mean(do, na.rm = TRUE), 3),
+    mean_chla = round(mean(chla, na.rm = TRUE), 3),
+    mean_spc = round(mean(spc, na.rm = TRUE), 3),
+    mean_ph = round(mean(pH, na.rm = TRUE), 3)
+  )  #drop NA rows 
 
 pond_sum <- function(data, group.by) {
   data |>
