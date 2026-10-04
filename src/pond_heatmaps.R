@@ -1,8 +1,8 @@
 #author: Evan Krause
 #created: September 2026
 #updated
-#depth-by-date (limnology profile) heatmaps for Long Pond monitoring
-#interpolates depth x date grids per station/year so stratification patterns
+#depth-by-date heatmaps for Long Pond monitoring
+#interpolate depth x date grids per station/year so stratified patterns
 #(e.g. thermocline, chlorophyll layers) are visible for each parameter
 
 # packages----

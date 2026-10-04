@@ -26,11 +26,12 @@ report_theme <- theme(
 #boxplots
 ## temp by month  
   hpm_dat |>
-    filter(month %in% c(6,7,8)) |>
-    ggplot(aes(temp_c, color = year)) +
-    geom_boxplot() +
-    facet_grid(~month) +
-    coord_flip()
+    filter(month %in% c(5,6,7,8)) |>
+    ggplot(aes(datetime,temp_c, color = year)) +
+    geom_point() +
+    geom_line(aes(group = station)) +
+    facet_grid(~year)
+    # coord_flip()
     
   
 

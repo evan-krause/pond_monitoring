@@ -1,9 +1,6 @@
-#Author: Evan Krause
 #created: September 2026
-#bar chart (mean +/- SE) comparisons of 2025 vs 2026 at LP2/LP3 for
-#Long Pond monitoring data -- same parameters/sites as the presentation
-#boxplots in outputs/posit_boxplots.R
-
+ # at LP2/LP3 for
+#Long Pond monitoring data -- same param
 pkg <- c('tidyverse')
 
 installed_packages <- pkg %in% rownames(installed.packages())
@@ -27,14 +24,13 @@ if (file.exists(lp_cleaned_path)) {
 
 # bar chart function ----
 
-## one bar chart per parameter, restricted to LP2/LP3: station on x-axis,
+## one bar chart per parameter,  station on x-axis,
 ## year as dodged fill, bar height = mean, error bar = +/- 1 standard error.
 ## set exclude_bad_cast = TRUE for parameters affected by the known-bad
-## sensor cast at lp3, 2026-07-20, surface (currently just spc; that cast's
-## temp_c/do/chla readings were checked and are not anomalous)
-plot_param_barchart <- function(param, data = lp_dat, exclude_bad_cast = FALSE) {
+## sensor cast at lp3, 2026-07-20
+plot_param_barchart <- function(param, data = pond_dat, exclude_bad_cast = FALSE) {
   df <- data |>
-    filter(station %in% c("lp2", "lp3"), !is.na(.data[[param]])) |>
+    filter(station %in% c("301", "302"), !is.na(.data[[param]])) |>
     mutate(station = fct_drop(station))
 
   if (exclude_bad_cast) {
@@ -58,7 +54,7 @@ plot_param_barchart <- function(param, data = lp_dat, exclude_bad_cast = FALSE) 
       position = position_dodge2(padding = 0.5, preserve = "single"),
       width = 0.2
     ) +
-    scale_x_discrete(labels = c(lp2 = "LP2", lp3 = "LP3")) +
+    scale_x_discrete() +
     scale_fill_viridis_d(name = "Year") +
     labs(
       x = "Station", y = paste0("Mean ", param, " (\u00b1 SE)"),
@@ -72,7 +68,7 @@ plot_param_barchart <- function(param, data = lp_dat, exclude_bad_cast = FALSE) 
 barchart_params <- list(
   temp_c = FALSE,
   do = FALSE,
-  spc = TRUE, #excludes the known-bad lp3 2026-07-20 surface cast
+  spc = FALSE, #excludes the known-bad lp3 2026-07-20 surface cast
   chla = FALSE
 )
 
@@ -90,7 +86,7 @@ if (!dir.exists(barchart_out_dir)) {
 walk2(
   barchart_plots, names(barchart_plots),
   ~ ggsave(
-    filename = file.path(barchart_out_dir, paste0(.y, "_lp2_lp3.png")),
+    filename = file.path(barchart_out_dir, paste0(.y, "_301_302.png")),
     plot = .x,
     width = 7, height = 5, dpi = 150
   )

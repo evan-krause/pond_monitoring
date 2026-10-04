@@ -1,6 +1,5 @@
 #author: evan Krause
-#last updated: 2026-09-25
-
+#last updated: 2026-09-29
 
 # function for transforming watershed pond data into wide format for ease of 
 # analysis. This function accepts .xlsx files downloaded from MS Access DB 
@@ -28,7 +27,7 @@ installed_packages <- pkg %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {
   install.packages(pkg[!installed_packages])
 }
- sapply(pkg, library, character.only= TRUE)
+sapply(pkg, library, character.only = TRUE)
 
  ## functions----
 pond_clean <- function(x) {
@@ -115,4 +114,5 @@ hpm_dat$station <- droplevels(hpm_dat$station)
 #save rds for analysis/viz----
 saveRDS(hpm_dat, "data/hpm_cleaned.rds")
 saveRDS(lpm_dat, "data/lp_cleaned.rds")
+saveRDS(pond_dat, "data/pond_cleaned.rds")
   
