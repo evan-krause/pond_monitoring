@@ -41,3 +41,17 @@ pond_sum <- function(data, group.by) {
     ) |>
     arrange(desc(n))
 }
+
+summary_table_data <- lp_dat |>
+  filter(
+         station != "lp1",
+         depth_m >0.1) |>
+  group_by(year) |>
+  summarize(
+    min = across(where(is.numeric), \(x) min(x, na.rm = TRUE)),
+    mean = across(where(is.numeric),\(x) mean(x, na.rm = TRUE)),
+    sd = across(where(is.numeric), \(x) sd(x, na.rm = TRUE)),
+    med = across(where(is.numeric), \(x) median(x, na.rm = TRUE)),
+    max = across(where(is.numeric), \(x) max(x, na.rm = TRUE))
+  ) |>
+  ungroup()

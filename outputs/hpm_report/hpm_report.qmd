@@ -1,0 +1,75 @@
+---
+title: "Holding_ponds"
+author: "Evan Krause"
+format: html
+editor: visual
+---
+
+# Holding Ponds Monitoring
+
+### Setup
+
+```{r echo=FALSE, warning=FALSE, collapse=TRUE}
+pkg <- c("tidyverse", "gtsummary", "GGally", "kableExtra", "gt")
+
+installed_packages <- pkg %in% rownames(installed.packages()) #check if necessary packages are installed
+  if (any(installed_packages == FALSE)) {
+  install.packages(pkg[!installed_packages])#install if not in installed_packages list
+  }
+sapply(pkg, library, character.only = TRUE)
+rm(installed_packages, pkg)
+
+hpm_dat <- readRDS("projects/pond_monitoring/data/hpm_cleaned.rds")
+
+```
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this \# Summary statistics
+
+```{r echo=FALSE,warning=FALSE,message=FALSE,collapse=TRUE}
+
+param_sum <- hpm_dat |>
+  filter(year == 2026)|>
+  select(3,6,7,9,16,10,
+         -1,
+         -2,
+         -5,-11,-12,-13,-15) |>
+  tbl_summary(
+    by = station,
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})"),
+    label = list(
+      depth_m = "Max depth (Meters)",
+      temp_c = "Water Temperature (Deg-C)",
+      do = "Dissolved Oxygen (mg/L)",
+      chla = "Chlorophyll-a (ug/L)",
+      spc = "Specific Conductance (uS/cm)"
+    )
+  )  |>
+  bold_labels()
+```
+
+```{R}
+param_sum
+```
+
+The `echo: false`option disables the printing of code (only output is displayed).
+
+## Parameter exploration
+
+### Temperature
+
+```{r echo=FALSE}
+
+```
+
+```{r echo=FALSE}
+
+```

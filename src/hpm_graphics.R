@@ -2,6 +2,11 @@
 #Author: Evan Krause
 #created: August 2026
 
+
+
+hpm_dat<-  readRDS("data/hpm_cleaned.rds")
+
+
 #Theme----
 report_theme <- theme(
   legend.position = 'top',
@@ -27,7 +32,7 @@ report_theme <- theme(
 ## temp by month  
   hpm_dat |>
     filter(month %in% c(5,6,7,8)) |>
-    ggplot(aes(datetime,temp_c, color = year)) +
+    ggplot2::ggplot(aes(datetime,temp_c, color = year)) +
     geom_point() +
     geom_line(aes(group = station)) +
     facet_grid(~year)

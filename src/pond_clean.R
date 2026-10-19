@@ -48,7 +48,7 @@ pond_clean <- function(x) {
       date = as.Date(DateTimeET),
       station = as.factor(Station),
       year = as.factor(lubridate::year(DateTimeET)),
-      month = as.factor(lubridate::month(DateTimeET)),
+      month = as.factor(lubridate::month(DateTimeET, label = TRUE)),
       dplyr::across(dplyr::where(is.numeric), ~ dplyr::if_else(. < 0, 0, .))
     ) |> #factor and date coercion
     dplyr::rename(
@@ -115,4 +115,5 @@ hpm_dat$station <- droplevels(hpm_dat$station)
 saveRDS(hpm_dat, "data/hpm_cleaned.rds")
 saveRDS(lpm_dat, "data/lp_cleaned.rds")
 saveRDS(pond_dat, "data/pond_cleaned.rds")
-  
+
+pond_dat <- readRDS("data/pond_cleaned.rds")

@@ -10,7 +10,8 @@ pkg <- c('tidyverse',
          'GGally',
          'gt',
          'gtsummary',
-         'kableExtra')
+         'kableExtra',
+         'vtable')
 
 installed_packages <- pkg %in% rownames(installed.packages()) #check if necessary packages are installed
 if (any(installed_packages == FALSE)) {
@@ -46,9 +47,8 @@ source('src/lp_data_trans.R')
 
 
 
-# summary statistics + tables ----
+# summary statistics + tables + viz ----
 
-## Kable tables----
 sum_stats <- function(x) {
   c(
     "Min" = round(min(x), 3),
@@ -59,6 +59,163 @@ sum_stats <- function(x) {
   )
 }
 
+
+
+
+# graphics + plots ----
+
+## pairplots ----
+
+lp_26 |>
+  # filter() |>
+  select(c(6,7,9,10,16)) |>
+  ggpairs()
+
+## point-plots ----
+
+
+#column profile?
+# lp_dat |>
+#   ggplot(aes(color = c(depth_m))) +
+#   geom_point(aes(depth_m, pH)) +
+#   geom_line(aes(depth_m, pH)) +
+#   # geom_point(aes(Depth_m, `Dissolved Oxygen`)) +
+#   geom_point(aes(depth_m, Chlorophyll)) +
+#   geom_line(aes(depth_m, Chlorophyll)) + 
+#   geom_point(aes(depth_m, `Dissolved Oxygen`)) +
+#   geom_line(aes(depth_m, `Dissolved Oxygen`)) +
+#   geom_point(aes(depth_m, pH)) +
+#   geom_line(aes(depth_m, pH)) +
+#   facet_wrap(~date, scales = 'free_x') +
+#   coord_flip() +
+#   scale_x_reverse()
+
+## barplots----
+
+###lp_means by month plots----
+#mean temp
+lp_means |>
+  filter(station %in% c("lp2", "lp3"),
+         year == 2026) |>
+  # mutate(month = factor(.data[[,5]], levels = c("June", "July", "August", "September")))|>
+  ggplot2::ggplot() +
+  geom_col(aes(x = month(date, label = TRUE), y = mean_temp, fill = station), position = "dodge") +
+  labs(x = "Month",
+       y = "Temperature (deg-C)",
+       title = "Mean Temperature by Site|Month") +
+  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
+  report_theme +
+  theme(plot.subtitle = NULL)
+  facet_grid(~year)
+
+#mean chla
+lp_means |>
+  filter(station %in% c("lp2", "lp3"),
+         year == 2026) |>
+  ggplot() +
+  geom_col(aes(x = month(date, label = TRUE), y = mean_chla, fill = station), position = "dodge") +
+  labs(x = "Month", y = "Chla (mg/L)", title = "Mean Chlorophyll-a by Site|Month") +
+  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
+  report_theme + theme(plot.subtitle = NULL)
+  facet_grid(~year)
+
+#mean DO
+lp_means |>
+  filter(station %in% c("lp2", "lp3"),
+         year == 2026) |>
+  ggplot() +
+  geom_col(aes(x = month(date, label = TRUE), y = mean_do, fill = station), position = "dodge") +
+  geom_hline(yintercept = 6) +
+  labs(
+    x = "Month",
+    y = "DO (mg/L)",
+    title = "Mean Dissolved Oxygen by Site|Month",
+    subtitle = "6 mg/L reference"
+  ) +
+  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
+  report_theme +
+  theme(axis.title.y = element_text(size = rel(1), angle = 90),
+        legend.text = element_text()) 
+  # facet_grid(~year)
+
+#mean SPC
+lp_means |>
+  filter(station %in% c("lp2", "lp3"),
+         year == 2026) |>
+  ggplot() +
+  geom_col(aes(x = month(date, label = TRUE), y = mean_spc, fill = station), position = "dodge") +
+  labs(x = "Month", y = "SPC (uS/cm)", 
+       title = "Mean Specific conductivity by Site|Month") + 
+  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
+  ylim(limits = c(0, 200))+
+  report_theme 
+
+#mean DO
+lp_means |>
+  filter(station %in% c("lp2", "lp3")) |>
+  ggplot() +
+  geom_col(aes(x = month(date), y = mean_do, fill = station), position = "dodge", ) +
+  labs(x = "Month", y = "DO (mg/L)", title = "Mean Dissolved Oxygen by Site|Month|Year", ) +
+  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
+  ylim(limits = c(0, 10)) +
+  report_theme +
+  facet_grid( ~ year) 
+
+#mean temp
+lp_means |>
+  filter(station %in% c("lp2", "lp3")) |>
+  ggplot() +
+  geom_col(aes(x = month(date), y = mean_temp, fill = station), position = "dodge", ) +
+  labs(x = "Month", y = "Degrees C", title = "Mean Temperature by Site|Month|Year", ) +
+  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
+  ylim(limits = c(0, 30)) +
+  report_theme +
+  facet_grid( ~ year) 
+
+lp_dat |>
+  filter(depth_m > 0.05,
+         station %in% c("lp2", "lp3")) |>
+  ggplot(aes(color = year)) +
+  geom_boxplot(aes(x = station, y = spc)) + 
+  facet_grid( ~ month(date))
+
+# lp_dat |>
+#   filter(depth_m > 0.01) |>
+#   ggplot(aes(do, depth_m, color = year)) +
+#   geom_point() +
+#   facet_grid( ~ year) +
+#   coord_flip()
+
+
+## summary tables----
+### Gtsummary tables ----
+lp_26 <- lp_dat |>
+  filter(station %in% c('lp2', 'lp3'),
+         year == 2026)
+lp_26$station <- droplevels(lp_26$station)
+
+param_sum <- lp_26 |>
+select(3,6,7,9,16,10,
+         -1,
+         -2,
+         -5,-11,-12,-13,-15) |>
+  tbl_summary(
+    by = station,
+    statistic = list(
+      all_continuous() ~ "{min} {mean} ({sd}) {median} {max}"
+    ),
+    label = list(
+      depth_m = "Max depth (Meters)",
+      temp_c = "Water Temperature (Deg-C)",
+      do = "Dissolved Oxygen (mg/L)",
+      chla = "Chlorophyll-a (ug/L)",
+      spc = "Specific Conductance (uS/cm)"
+    )
+  )  |>
+  add_stat_label(location = c("column"))|>
+  bold_labels() 
+
+### Kable tables----
 lp1_dat <- lp_dat |>
   filter(station == "lp1")
 lp2_dat <- lp_dat |>
@@ -115,159 +272,15 @@ lp_26 <- droplevels(lp_26)
 # ) |>
 #   kable_styling("striped")
 
-## Gtsummary tables ----
-param_sum <- lp_26 |>
-  filter(station %in% c("lp2", "lp3"),
-         year == 2026)|>
-  select(3,6,7,9,16,10,
-         -1,
-         -2,
-         -5,-11,-12,-13,-15) |>
-  tbl_summary(
-    by = station,
-    statistic = list(
-      all_continuous() ~ "{mean} ({sd})",
-      depth_m ~ "{max}",
-      temp_c ~ "{median} ({min} - {max}) \n {mean} ({sd})",
-      do ~ "{median} ({min} - {max}) \n {mean} ({sd})",
-      chla ~ "{median} ({min} - {max}) \n{mean} ({sd})",
-      spc ~ "\n{mean} ({sd})"
-    ),
-    label = list(
-      depth_m = "Max depth (Meters)",
-      temp_c = "Water Temperature (Deg-C)",
-      do = "Dissolved Oxygen (mg/L)",
-      chla = "Chlorophyll-a (ug/L)",
-      spc = "Specific Conductance (uS/cm)"
-    )
-  )  |>
-  add_overall(last = TRUE) |>
-  bold_labels() 
-  
+vtable::sumtable(subset(lp_dat, station != 'lp1'),
+   vars = c("temp_c", "o2_sat", "do", "spc", "bga", "chla"),
+   summ = c('min(x)', 'mean(x)', 'median(x)', 'max(x)'),
+   factor.numeric = TRUE,
+   out = 'csv',
+   file = "outputs/lp_sum_table.csv",
+   group = 'station',
+   title = "Long Pond 2026 summary statistics")
 
-# graphics + plots ----
-
-## pairplots ----
-
-lp_26 |>
-  # filter() |>
-  select(c(6,7,9,10,16)) |>
-  ggpairs()
-
-## point-plots ----
-
-
-#column profile?
-# lp_dat |>
-#   ggplot(aes(color = c(depth_m))) +
-#   geom_point(aes(depth_m, pH)) +
-#   geom_line(aes(depth_m, pH)) +
-#   # geom_point(aes(Depth_m, `Dissolved Oxygen`)) +
-#   geom_point(aes(depth_m, Chlorophyll)) +
-#   geom_line(aes(depth_m, Chlorophyll)) + 
-#   geom_point(aes(depth_m, `Dissolved Oxygen`)) +
-#   geom_line(aes(depth_m, `Dissolved Oxygen`)) +
-#   geom_point(aes(depth_m, pH)) +
-#   geom_line(aes(depth_m, pH)) +
-#   facet_wrap(~date, scales = 'free_x') +
-#   coord_flip() +
-#   scale_x_reverse()
-
-## barplots----
-
-###lp_means by month plots----
-#mean temp
-lp_means |>
-  filter(station %in% c("lp2", "lp3"),
-         year == 2026) |>
-  # mutate(month = factor(.data[[,5]], levels = c("June", "July", "August", "September")))|>
-  ggplot() +
-  geom_col(aes(x = month(date), y = mean_temp, fill = station), position = "dodge") +
-  labs(x = "Month",
-       y = "Temperature (deg-C)",
-       title = "Mean Temperature by Site|Month") +
-  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
-  report_theme +
-  theme(plot.subtitle = NULL)
-  facet_grid(~year)
-
-#mean chla
-lp_means |>
-  filter(station %in% c("lp2", "lp3"),
-         year == 2026) |>
-  ggplot() +
-  geom_col(aes(x = month(date), y = mean_chla, fill = station), position = "dodge") +
-  labs(x = "Month", y = "Chla (mg/L)", title = "Mean Chlorophyll-a by Site|Month") +
-  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
-  report_theme + theme(plot.subtitle = NULL)
-  facet_grid(~year)
-
-#mean DO
-lp_means |>
-  filter(station %in% c("lp2", "lp3"),
-         year == 2026) |>
-  ggplot() +
-  geom_col(aes(x = month(date), y = mean_do, fill = station), position = "dodge") +
-  geom_hline(yintercept = 6) +
-  labs(
-    x = "Month",
-    y = "DO (mg/L)",
-    title = "Mean Dissolved Oxygen by Site|Month",
-    subtitle = "6 mg/L reference"
-  ) +
-  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
-  report_theme +
-  theme(axis.title.y = element_text(size = rel(1), angle = 90),
-        legend.text = element_text()) 
-  # facet_grid(~year)
-
-#mean SPC
-lp_means |>
-  filter(station %in% c("lp2", "lp3"),
-         year == 2026) |>
-  ggplot() +
-  geom_col(aes(x = month(date), y = mean_spc, fill = station), position = "dodge") +
-  labs(x = "Month", y = "SPC (uS/cm)", 
-       title = "Mean Specific conductivity by Site|Month|Year") + 
-  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
-  ylim(limits = c(0, 200))+
-  report_theme +
-  facet_grid( ~ year)
-
-
-#mean DO
-lp_means |>
-  filter(station %in% c("lp2", "lp3")) |>
-  ggplot() +
-  geom_col(aes(x = month(date), y = mean_do, fill = station), position = "dodge", ) +
-  labs(x = "Month", y = "DO (mg/L)", title = "Mean Dissolved Oxygen by Site|Month|Year", ) +
-  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
-  ylim(limits = c(0, 10)) +
-  report_theme +
-  facet_grid( ~ year) 
-
-#mean temp
-lp_means |>
-  filter(station %in% c("lp2", "lp3")) |>
-  ggplot() +
-  geom_col(aes(x = month(date), y = mean_temp, fill = station), position = "dodge", ) +
-  labs(x = "Month", y = "Degrees C", title = "Mean Temperature by Site|Month|Year", ) +
-  scale_fill_viridis_d(labels = c("LP2", "LP3")) +
-  ylim(limits = c(0, 30)) +
-  report_theme +
-  facet_grid( ~ year) 
-
-lp_dat |>
-  filter(depth_m > 0.05,
-         station %in% c("lp2", "lp3")) |>
-  ggplot(aes(color = year)) +
-  geom_boxplot(aes(x = station, y = spc)) + 
-  facet_grid( ~ month(date))
-
-# lp_dat |>
-#   filter(depth_m > 0.01) |>
-#   ggplot(aes(do, depth_m, color = year)) +
-#   geom_point() +
-#   facet_grid( ~ year) +
-#   coord_flip()
-
+tbl_summary(
+  data = subset(lp_dat, station != 'lp1')
+)
