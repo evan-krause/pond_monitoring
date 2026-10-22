@@ -1,7 +1,11 @@
-#Author: Evan Krause
-#created: 2026-09
-#updated: 2026-10-13
-#
+###############################  HEADER  ######################################
+#  TITLE: pond_boxplots.R
+#  DESCRIPTION: generate visualizations from cleaned holding ponds 
+#  monitoring data. boxplot comparisons of 2025 vs 2026
+#  AUTHOR(S): Evan Krause
+#  DATE LAST UPDATED: 2026-10-13
+##############################################################################
+
 
 pkg <- c("tidyverse")
 
@@ -34,8 +38,10 @@ plot_param_boxplot <- function(param, data = pond_dat, min_n = 5) {
     return(NULL)
   
   ggplot2::ggplot(df, ggplot2::aes(x = station, y = .data[[param]], fill = year)) +
-    ggplot2::geom_boxplot(position = ggplot2::position_dodge2(preserve = "single"), 
-                          median.colour = "steelblue") +
+    ggplot2::geom_boxplot(
+      position = ggplot2::position_dodge2(preserve = "single"),
+      median.colour = "steelblue"
+    ) +
     ggplot2::scale_fill_viridis_d(name = "Year", option = "C") +
     ggplot2::labs(
       x = "Station",
@@ -64,8 +70,10 @@ if (nrow(df) == 0)
   return(NULL)
 
 ggplot2::ggplot(df, ggplot2::aes(x = station, y = .data[[param]], fill = year)) +
-  ggplot2::geom_boxplot(position = ggplot2::position_dodge2(preserve = "single"), 
-                        median.colour = "steelblue") +
+  ggplot2::geom_boxplot(
+    position = ggplot2::position_dodge2(preserve = "single"),
+    median.colour = "steelblue"
+  ) +
   ggplot2::scale_fill_viridis_d(name = "Year", option = "C") +
   ggplot2::labs(
     x = "Station",
@@ -112,11 +120,11 @@ if (!dir.exists(boxplot_out_dir)) {
   dir.create(boxplot_out_dir, recursive = TRUE)
 }
 
-walk2(
+purrr::walk2(
   boxplot_plots,
   names(boxplot_plots),
   ~ ggsave(
-    filename = file.path(boxplot_out_dir, paste0(.y,"_lp2_lp3", ".png")),
+    filename = file.path(boxplot_out_dir, paste0(.y, "_lp2_lp3", ".png")),
     plot = .x,
     width = 7,
     height = 5,

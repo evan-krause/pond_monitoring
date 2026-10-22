@@ -1,3 +1,14 @@
+###############################  HEADER  ######################################
+#  TITLE: hpm_graphics.R
+#  DESCRIPTION: generate summary statistics from cleaned Long Pond 
+#  monitoring data
+#  AUTHOR(S): Evan Krause
+#  DATE LAST UPDATED: 2026-09-28
+##############################################################################
+
+
+
+
 #author: Evan Krause
 #last update: 2026-09-28
 #purpose: to summarize 
@@ -47,8 +58,7 @@ pond_sum <- function(data, group.by) {
 
 summary_table_data <- lp_dat |>
   filter(station != "lp1", 
-         depth_m > 0.1,
-         year == 2026) |>
+         depth_m > 0.1) |>
   group_by(station) |>
   summarize(
     min = across(where(is.numeric), \(x) min(x, na.rm = TRUE)),

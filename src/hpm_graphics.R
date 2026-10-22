@@ -1,6 +1,9 @@
-#Holding ponds graphics
-#Author: Evan Krause
-#created: August 2026
+###############################  HEADER  ######################################
+#  TITLE: hpm_graphics.R
+#  DESCRIPTION: generate visualizations from cleaned holding ponds monitoring data
+#  AUTHOR(S): Evan Krause
+#  DATE LAST UPDATED: 2026-10-20
+##############################################################################
 
 
 

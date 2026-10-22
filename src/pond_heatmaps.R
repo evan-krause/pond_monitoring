@@ -1,9 +1,13 @@
-#author: Evan Krause
-#created: September 2026
-#updated
-#depth-by-date heatmaps for Long Pond monitoring
-#interpolate depth x date grids per station/year so stratified patterns
-#(e.g. thermocline, chlorophyll layers) are visible for each parameter
+###############################  HEADER  ######################################
+#  TITLE: pond_heatmaps.R
+#  DESCRIPTION: depth-by-date heatmaps for Long Pond monitoring
+#  interpolate depth/date grids per station/year so stratification patterns
+#  (e.g. thermocline, chlorophyll layers) are visible for each parameter
+#  !!!THIS IS NOT A FUNCTIONAL SCRIPT AS OF 10/22/2026!!!
+#  AUTHOR(S): Evan Krause
+#  DATE LAST UPDATED: 2026-09-13
+##############################################################################
+
 
 # packages----
 pkg <- c('tidyverse', 'interp')
@@ -33,11 +37,18 @@ make_profile_grid <- function(df, param, n_grid = 80) {
     filter(!is.na(depth_m), !is.na(.data[[param]])) |>
     distinct(date, depth_m, .keep_all = TRUE)
   
-  empty <- tibble(date = as.Date(character()), depth_m = numeric(), value = numeric())
+  empty <- tibble(
+    date = as.Date(character()),
+    depth_m = numeric(),
+    value = numeric()
+  )
   
   # need enough distinct sampling dates/points for a stable interpolation
-  if (n_distinct(df$date) < 3 || nrow(df) < 5) return(empty)
+  if (n_distinct(df$date) < 3 ||
+      nrow(df) < 5)
+    return(empty)
   
+  # defines parameters of interpolation
   fit <- interp(
     x = as.numeric(df$date),
     y = df$depth_m,
@@ -46,20 +57,19 @@ make_profile_grid <- function(df, param, n_grid = 80) {
     nx = n_grid,
     ny = n_grid,
     linear = TRUE
+    
   )
-  
+  # creates a grid of paired values to interpolate between
   expand_grid(xi = seq_along(fit$x), yi = seq_along(fit$y)) |>
-    mutate(
-      date = as.Date(fit$x[xi]),
-      depth_m = fit$y[yi],
-      value = fit$z[cbind(xi, yi)]
-    ) |>
+    mutate(date = as.Date(fit$x[xi]),
+           depth_m = fit$y[yi],
+           value = fit$z[cbind(xi, yi)]) |>
     select(date, depth_m, value)
 }
 
-## build one heatmap for a given parameter + station ----
-## years are faceted separately rather than interpolated across, since
-## sampling seasons are separated by multi-month gaps with no data
+# One heatmap for a given parameter + station
+# years are faceted separately rather than interpolated across, since
+# sampling seasons are separated by multi-month gaps with no data
 plot_profile_heatmap <- function(param, station_id, data = pond_dat) {
   data <- data |>
     filter(station == station_id) |>
@@ -88,7 +98,7 @@ plot_profile_heatmap <- function(param, station_id, data = pond_dat) {
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
 }
 
-# generate + save heatmaps for every parameter/station combination ----
+# create/save heatmaps for every parameter/station combination ----
 
 params <- c("temp_c", "o2_sat", "do", "spc", "pH", "turbid_fnu", "bga_rfu", "bga", "chla_rfu", "chla")
 stations <- levels(pond_dat$station)
@@ -102,11 +112,14 @@ profile_plots <- purrr::map2(
   purrr::set_names(paste(combos$param, combos$station_id, sep = "_"))
 
 ## save each plot to disk ----
+
+#created output directory if doesnt' exist
 heatmap_out_dir <- "outputs/heatmaps_2"
 if (!dir.exists(heatmap_out_dir)) {
   dir.create(heatmap_out_dir, recursive = TRUE)
 }
 
+#purrr walk to save each plot, applying plot names to output file
 walk2(
   profile_plots, names(profile_plots),
   ~ ggsave(

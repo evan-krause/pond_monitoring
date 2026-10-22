@@ -1,5 +1,10 @@
-#Author: Evan Krause
-#date:
+###############################  HEADER  ######################################
+#  TITLE: pond_monitor_funcs.R
+#  DESCRIPTION: misc function repo
+#  AUTHOR(S): Evan Krause
+#  DATE LAST UPDATED: 2026-10-01
+##############################################################################
+
 
 # Package installation----
 pkg <- c(

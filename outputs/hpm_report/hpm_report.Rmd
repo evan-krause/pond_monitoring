@@ -1,0 +1,179 @@
+---
+title: "Holding Ponds Report"
+author: "Evan Krause"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    df_print: paged
+  pdf_document:
+    toc: true
+---
+
+```{r Setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(visdat)
+```
+
+```{r Import, echo=FALSE}
+hpm_dat <- readRDS("data/hpm_cleaned.rds")
+
+sums <- sapply(hpm_dat, summary)
+
+
+olo <- subset(hpm_dat, station == "302")
+pot <- subset(hpm_dat, station == "301")
+
+hpm_means <- hpm_dat |>
+  dplyr::summarize(
+    .by = c(year, date, station),
+    mean_temp = round(mean(temp_c, na.rm = TRUE), 3),
+    mean_do = round(mean(do, na.rm = TRUE), 3),
+    mean_chla = round(mean(chla, na.rm = TRUE), 3),
+    mean_spc = round(mean(spc, na.rm = TRUE), 3),
+    mean_ph = round(mean(pH, na.rm = TRUE), 3)
+  )  #drop NA rows 
+
+```
+
+### Data Overview {.tabset .tabset-pills}
+
+```{r, echo=FALSE}
+head(hpm_dat)
+```
+
+#### Data types
+```{r datatype, echo=FALSE}
+vis_dat(hpm_dat)
+```
+
+#### Summary stats
+```{r}
+summary(hpm_dat)
+```
+
+#### Missing data check 
+```{r vismiss, echo=FALSE}
+vis_miss(hpm_dat)
+```
+
+
+
+### Parameter summaries {.tabset .tabset-pills}
+
+#### O'Laughlin {.tabset .tabset-pills}
+
+##### Dissolved Oxygen (mg/L)
+
+##### Temperature (deg-C)
+
+##### Specific Conductivity
+
+##### Chlorophyll-a
+
+#### Pottapaug {.tabset .tabset-pills}
+
+##### Dissolved Oxygen (mg/L)
+
+##### Temperature (deg-C)
+
+##### Specific Conductivity
+
+##### Chlorophyll-a
+
+
+### Visual exploration {.tabset .tabset-pills}
+
+#### O'Laughlin {.tabset .tabset-pills}
+```{r , echo=FALSE}
+# olo_sum<- sapply(olo, summary)
+# olo_sum
+```
+
+##### Dissolved Oxygen (mg/L)
+```{r, echo=FALSE}
+hpm_means |>
+  filter(station == 302)|>
+  ggplot(aes(month(date), mean_do)) +
+  geom_point() +
+  geom_line(aes(colour = year))
+```
+
+##### Temperature (deg-C)
+```{r, echo=FALSE}
+hpm_means |>
+  filter(station == 302)|>
+  ggplot(aes(month(date), mean_temp)) +
+  geom_point() +
+  geom_line(aes(colour = year))
+```
+
+##### Specific Conductivity
+```{r, echo=FALSE}
+hpm_means |>
+  filter(station == 302)|>
+  ggplot(aes(month(date), mean_spc)) +
+  geom_point() +
+  geom_line(aes(colour = year)) +
+  ylim(c(70,140))+
+  labs()
+```
+
+##### Chlorophyll-a
+```{r, echo=FALSE}
+hpm_means |>
+  filter(station == 302)|>
+  ggplot(aes(date, mean_chla)) +
+  geom_point() +
+  geom_line(aes(colour = year)) +
+  ylim(c(0,3.5)) 
+```
+
+#### Pottapaug {.tabset .tabset-pills}
+```{r, echo=FALSE}
+# pot_sum<- sapply(pot, summary)
+# pot_sum
+```
+
+##### Dissolved Oxygen (mg/L)
+
+```{r, echo=FALSE}
+hpm_means |>
+  filter(station == 301)|>
+  ggplot(aes(month(date), mean_do)) +
+  geom_point() +
+  geom_line(aes(colour = year))
+```
+
+##### Temperature (deg-C)
+
+```{r, echo=FALSE}
+hpm_means |>
+  filter(station == 301)|>
+  ggplot(aes(month(date), mean_temp)) +
+  geom_point() +
+  geom_line(aes(colour = year))
+```
+
+##### Specific Conductivity
+
+```{r, echo=FALSE}
+hpm_means |>
+  filter(station == 301)|>
+  ggplot(aes(month(date), mean_spc)) +
+  geom_point() +
+  geom_line(aes(colour = year))
+```
+
+##### Chlorophyll-a
+
+```{r, echo=FALSE}
+hpm_means |>
+  filter(station == 301)|>
+  ggplot(aes(month(date), mean_chla)) +
+  geom_point() +
+  geom_line(aes(colour = year))
+```
+

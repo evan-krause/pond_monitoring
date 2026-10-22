@@ -1,6 +1,13 @@
-#author: Evan Krause
-#created: 09-2026
-#bar chart comparisons of 2025 vs 2026
+###############################  HEADER  ######################################
+#  TITLE: pond_barcharts.R
+#  DESCRIPTION: generate visualizations from cleaned holding ponds 
+#  monitoring data. bar chart comparisons of 2025 vs 2026
+#  AUTHOR(S): Evan Krause
+#  DATE LAST UPDATED: 2026-10-20
+##############################################################################
+
+
+
 
 pkg <- c('tidyverse')
 

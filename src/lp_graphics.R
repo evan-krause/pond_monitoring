@@ -1,8 +1,13 @@
-#Author: Evan Krause
-#created: August 2025
-#updated: 2026-09-28
-#data vis script for Long Pond monitoring
-#data obtained from DRC_DWSP MS Access database in csv format
+###############################  HEADER  ######################################
+#  TITLE: hpm_graphics.R
+#  DESCRIPTION: generate visualizations from cleaned Long Pond 
+#  monitoring data
+#  AUTHOR(S): Evan Krause
+#  DATE LAST UPDATED: 2026-09-28
+##############################################################################
+
+
+
 
 
 pkg <- c('tidyverse',

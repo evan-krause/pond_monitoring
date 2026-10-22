@@ -1,10 +1,18 @@
-#author: evan Krause
-#last updated: 2026-09-29
+###############################  HEADER  ######################################
+#  TITLE: pond_clean.R
+#  DESCRIPTION: function for transforming watershed pond data into wide format for ease of 
+#  analysis. This function accepts .xlsx files downloaded from MS Access DB 
+#  in the schema of table, "Quabbin_tblPondFieldParameters' with column headers
+#  matching the 'names' vector below.
+#  AUTHOR(S): Evan Krause
+#  DATE LAST UPDATED: 2026-09-29
+##############################################################################
 
-# function for transforming watershed pond data into wide format for ease of 
-# analysis. This function accepts .xlsx files downloaded from MS Access DB 
-# in the schema of table, "Quabbin_tblPondFieldParameters' with column headers
-# matching the 'names' vector below.
+
+#author: evan Krause
+#last updated: 
+
+
 
 # names <- c(
 #   "ID",
