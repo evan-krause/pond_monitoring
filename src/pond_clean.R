@@ -9,9 +9,6 @@
 ##############################################################################
 
 
-#author: evan Krause
-#last updated: 
-
 
 
 # names <- c(
@@ -37,7 +34,7 @@ if (any(installed_packages == FALSE)) {
 }
 sapply(pkg, library, character.only = TRUE)
 
- ## functions----
+## functions----
 pond_clean <- function(x) {
   raw_dat <- if (file.exists(paste0("data/", {{x}})) == TRUE) {
     readxl::read_excel(paste0("data/", {{x}}))
@@ -105,15 +102,13 @@ pond_dat$station <- forcats::fct_collapse(
 
 #filter long pond sites
 lpm_dat <- pond_dat |>
-  dplyr::filter(station %in% c("lp1","lp2", "lp3"),
-                depth_m > 0.04)
+  dplyr::filter(station %in% c("lp1", "lp2", "lp3"), depth_m > 0.04)
 
 lpm_dat$station <- droplevels(lpm_dat$station)
 
 #filter holding ponds sites
 hpm_dat <- pond_dat |>
-  dplyr::filter(station %in% c("301", "302"),
-                depth_m > 0.4)
+  dplyr::filter(station %in% c("301", "302"), depth_m > 0.4)
 
 hpm_dat$station <- droplevels(hpm_dat$station)
 

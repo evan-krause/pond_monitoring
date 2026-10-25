@@ -5,14 +5,8 @@
 #  DATE LAST UPDATED: 2026-10-01
 ##############################################################################
 
-
 # Package installation----
-pkg <- c(
-  "tidyverse",
-  "zoo",
-  "DBI",
-  "duckdb"
-)
+pkg <- c("tidyverse", "zoo", "DBI", "duckdb")
 
 installed_packages <- pkg %in% rownames(installed.packages()) #check if necessary packages are installed
 if (any(installed_packages == FALSE)) {

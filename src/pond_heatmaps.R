@@ -8,7 +8,6 @@
 #  DATE LAST UPDATED: 2026-09-13
 ##############################################################################
 
-
 # packages----
 pkg <- c('tidyverse', 'interp')
 
@@ -77,7 +76,7 @@ plot_profile_heatmap <- function(param, station_id, data = pond_dat) {
   
   grid_dat <- data |>
     group_by(yr) |>
-    group_modify(~ make_profile_grid(.x, param)) |>
+    group_modify( ~ make_profile_grid(.x, param)) |>
     ungroup() |>
     filter(!is.na(value))
   
@@ -85,13 +84,19 @@ plot_profile_heatmap <- function(param, station_id, data = pond_dat) {
   
   ggplot(grid_dat, aes(date, depth_m)) +
     geom_tile(aes(fill = value), interpolate = TRUE) +
-    geom_point(data = points_dat, size = 0.6, color = "white", alpha = 0.6) +
+    geom_point(
+      data = points_dat,
+      size = 0.6,
+      color = "white",
+      alpha = 0.6
+    ) +
     scale_y_reverse() +
     scale_x_date(date_labels = "%b '%y", date_breaks = "1 month") +
     scale_fill_viridis_c(name = param) +
-    facet_wrap(~ yr, scales = "free_x", nrow = 1) +
+    facet_wrap( ~ yr, scales = "free_x", nrow = 1) +
     labs(
-      x = "Date", y = "Depth (m)",
+      x = "Date",
+      y = "Depth (m)",
       title = paste0("Depth profile heatmap - ", param, " (", toupper(station_id), ")")
     ) +
     theme_minimal() +
@@ -100,15 +105,25 @@ plot_profile_heatmap <- function(param, station_id, data = pond_dat) {
 
 # create/save heatmaps for every parameter/station combination ----
 
-params <- c("temp_c", "o2_sat", "do", "spc", "pH", "turbid_fnu", "bga_rfu", "bga", "chla_rfu", "chla")
+params <- c(
+  "temp_c",
+  "o2_sat",
+  "do",
+  "spc",
+  "pH",
+  "turbid_fnu",
+  "bga_rfu",
+  "bga",
+  "chla_rfu",
+  "chla"
+)
 stations <- levels(pond_dat$station)
 
 combos <- tidyr::expand_grid(param = params, station_id = stations)
 
-profile_plots <- purrr::map2(
-  combos$param, combos$station_id,
-  ~ plot_profile_heatmap(.x, .y)
-) |>
+profile_plots <- purrr::map2(combos$param,
+                             combos$station_id,
+                             ~ plot_profile_heatmap(.x, .y)) |>
   purrr::set_names(paste(combos$param, combos$station_id, sep = "_"))
 
 ## save each plot to disk ----
@@ -121,10 +136,13 @@ if (!dir.exists(heatmap_out_dir)) {
 
 #purrr walk to save each plot, applying plot names to output file
 walk2(
-  profile_plots, names(profile_plots),
+  profile_plots,
+  names(profile_plots),
   ~ ggsave(
     filename = file.path(heatmap_out_dir, paste0(.y, ".png")),
     plot = .x,
-    width = 8, height = 5, dpi = 150
+    width = 8,
+    height = 5,
+    dpi = 150
   )
 )

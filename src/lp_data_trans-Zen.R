@@ -29,7 +29,7 @@ lp_means <- lp_dat |>
     mean_chla = round(mean(chla, na.rm = TRUE), 3),
     mean_spc = round(mean(spc, na.rm = TRUE), 3),
     mean_ph = round(mean(pH, na.rm = TRUE), 3)
-  )  #drop NA rows 
+  )  #drop NA rows
 
 pond_sum <- function(data, group.by) {
   data |>
@@ -46,9 +46,7 @@ pond_sum <- function(data, group.by) {
 }
 
 summary_table_data <- lp_dat |>
-  filter(station != "lp1", 
-         depth_m > 0.1,
-         year == 2026) |>
+  filter(station != "lp1", depth_m > 0.1, year == 2026) |>
   group_by(station) |>
   summarize(
     min = across(where(is.numeric), \(x) min(x, na.rm = TRUE)),

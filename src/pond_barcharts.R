@@ -9,6 +9,7 @@
 
 
 
+
 pkg <- c('tidyverse')
 
 installed_packages <- pkg %in% rownames(installed.packages())
@@ -38,14 +39,17 @@ if (file.exists(cleaned_path)) {
 ## set exclude_bad_cast = TRUE for parameters affected by the known-bad
 ## sensor cast at lp3, 2026-07-20, surface (currently just spc; that cast's
 ## temp_c/do/chla readings were checked and are not anomalous)
-plot_param_barchart <- function(param, data = pond_dat, exclude_bad_cast = FALSE) {
+plot_param_barchart <- function(param,
+                                data = pond_dat,
+                                exclude_bad_cast = FALSE) {
   df <- data |>
     filter(station %in% c("lp2", "lp3"), !is.na(.data[[param]])) |>
     mutate(station = fct_drop(station))
   
   if (exclude_bad_cast) {
     df <- df |>
-      filter(!(station == "lp3" & date == as.Date("2026-07-20") & depth_m < 0.1))
+      filter(!(station == "lp3" &
+                 date == as.Date("2026-07-20") & depth_m < 0.1))
   }
   
   
@@ -61,14 +65,16 @@ plot_param_barchart <- function(param, data = pond_dat, exclude_bad_cast = FALSE
   ggplot(summ, aes(x = station, y = mean, fill = year)) +
     geom_col(position = position_dodge2(preserve = "single"), width = 0.7) +
     geom_errorbar(
-      aes(ymin = mean - se, ymax = mean + se), color = "steelblue",
+      aes(ymin = mean - se, ymax = mean + se),
+      color = "steelblue",
       position = position_dodge2(padding = 0.5, preserve = "single"),
       width = 0.2
     ) +
     scale_x_discrete() +
     scale_fill_viridis_d(name = "Year", option = "C") +
     labs(
-      x = "Station", y = paste0("Mean ", param, " (\u00b1 SE)"),
+      x = "Station",
+      y = paste0("Mean ", param, " (\u00b1 SE)"),
       title = paste("Mean", param, "by site and year")
     ) +
     theme(
@@ -79,7 +85,7 @@ plot_param_barchart <- function(param, data = pond_dat, exclude_bad_cast = FALSE
       panel.grid = element_line(colour = 'white'),
       axis.text.x = element_text(angle = 0, face = "bold")
     )
-    
+  
 }
 
 # generate + save bar charts for the presentation parameter set ----
@@ -87,14 +93,13 @@ plot_param_barchart <- function(param, data = pond_dat, exclude_bad_cast = FALSE
 barchart_params <- list(
   temp_c = FALSE,
   do = FALSE,
-  spc = FALSE, #excludes the known-bad lp3 2026-07-20 surface cast
+  spc = FALSE,
+  #excludes the known-bad lp3 2026-07-20 surface cast
   chla = FALSE
 )
 
-barchart_plots <- purrr::imap(
-  barchart_params,
-  ~ plot_param_barchart(.y, exclude_bad_cast = .x)
-)
+barchart_plots <- purrr::imap(barchart_params,
+                              ~ plot_param_barchart(.y, exclude_bad_cast = .x))
 
 ## save each plot to disk ----
 barchart_out_dir <- "outputs/barcharts"
@@ -103,11 +108,14 @@ if (!dir.exists(barchart_out_dir)) {
 }
 
 walk2(
-  barchart_plots, names(barchart_plots),
+  barchart_plots,
+  names(barchart_plots),
   ~ ggsave(
-    filename = file.path(barchart_out_dir, paste0(.y, "_lp2_lp3",".png")),
+    filename = file.path(barchart_out_dir, paste0(.y, "_lp2_lp3", ".png")),
     plot = .x,
-    width = 7, height = 5, dpi = 150
+    width = 7,
+    height = 5,
+    dpi = 150
   )
 )
 
@@ -120,14 +128,17 @@ walk2(
 
 ## one bar chart per parameter: station on x-axis, year as dodged fill,
 ## bar height = median, error bar = IQR (25th-75th percentile)
-plot_param_median_barchart <- function(param, data = lp_dat, exclude_bad_cast = FALSE) {
+plot_param_median_barchart <- function(param,
+                                       data = lp_dat,
+                                       exclude_bad_cast = FALSE) {
   df <- data |>
     filter(station %in% c("lp2", "lp3"), !is.na(.data[[param]])) |>
     mutate(station = fct_drop(station))
   
   if (exclude_bad_cast) {
     df <- df |>
-      filter(!(station == "lp3" & date == as.Date("2026-07-20") & depth_m < 0.1))
+      filter(!(station == "lp3" &
+                 date == as.Date("2026-07-20") & depth_m < 0.1))
   }
   
   summ <- df |>
@@ -150,7 +161,8 @@ plot_param_median_barchart <- function(param, data = lp_dat, exclude_bad_cast = 
     scale_x_discrete(labels = c(lp2 = "LP2", lp3 = "LP3")) +
     scale_fill_viridis_d(name = "Year") +
     labs(
-      x = "Station", y = paste0("Median ", param, " (IQR)"),
+      x = "Station",
+      y = paste0("Median ", param, " (IQR)"),
       title = paste("Median", param, "by site and year")
     ) +
     theme_minimal(base_size = 14)
@@ -164,10 +176,13 @@ median_barchart_plots <- purrr::map(median_barchart_params, plot_param_median_ba
 
 # median save to disk----
 walk2(
-  median_barchart_plots, names(median_barchart_plots),
+  median_barchart_plots,
+  names(median_barchart_plots),
   ~ ggsave(
     filename = file.path(barchart_out_dir, paste0(.y, "_lp2_lp3_median.png")),
     plot = .x,
-    width = 7, height = 5, dpi = 150
+    width = 7,
+    height = 5,
+    dpi = 150
   )
 )

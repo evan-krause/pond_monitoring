@@ -7,6 +7,7 @@
 ##############################################################################
 
 
+
 pkg <- c("tidyverse")
 
 installed_packages <- pkg %in% rownames(installed.packages())
@@ -131,5 +132,3 @@ purrr::walk2(
     dpi = 150
   )
 )
-
-

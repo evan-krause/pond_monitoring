@@ -1,13 +1,10 @@
 ###############################  HEADER  ######################################
 #  TITLE: pond_sum_fun.R
-#  DESCRIPTION: generate summary statistics from cleaned holding ponds 
+#  DESCRIPTION: generate summary statistics from cleaned holding ponds
 #  monitoring data
 #  AUTHOR(S): Evan Krause
 #  DATE LAST UPDATED: 2026-09-10
 ##############################################################################
-
-
-
 
 pond_sum <- function(data, group.by) {
   data |>
